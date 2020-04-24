@@ -4,6 +4,7 @@ from PIL import Image
 ORIENTATIONS = ["landscape", "portrait", "square"]
 
 class BasicPicture:
+  # Basic information of an image object
   def __init__(self, image):
     self.image = image
     self.lookupBasicInfo()
@@ -13,26 +14,28 @@ class BasicPicture:
     (self.width, self.height) = self.image.size
 
 class Mockup(BasicPicture):
+  # Information specific to mockups
   def __init__(self, image):
     super().__init__(image)
     self.lookupMockupInfo()
     self.valid = True
     # Check results
     if not (
-      self.orientation in ORIENTATIONS and
+      self.frameorientation in ORIENTATIONS and
       self.framewidth > 0 and self.frameheight > 0 and
       self.framecoordinatex > 0 and self.framecoordinatey > 0
     ):
       self.valid = False
   def lookupMockupInfo(self):
     info = re.match("^([a-z]{6,9})-s([0-9]+)x([0-9]+)c([0-9]+)x([0-9]+)-", self.filename)
-    self.orientation = info.group(1)
+    self.frameorientation = info.group(1)
     self.framewidth = int(info.group(2))
     self.frameheight = int(info.group(3))
     self.framecoordinatex = int(info.group(4))
     self.framecoordinatey = int(info.group(5))
 
 class Photo(BasicPicture):
+  # Information specific to photos
   def __init__(self, image):
     super().__init__(image)
     self.lookupPhotoInfo()
@@ -102,7 +105,7 @@ class PhotoFramer:
     number_framed = 0
 
     if total > 150:
-      input("%d photos and %d mockups found. Continue?", (len(self.photoList), len(self.mockupList)))
+      input("LOTS AND LOTS! %d photos and %d mockups found. Continue? [Enter]", (len(self.photoList), len(self.mockupList)))
 
     for photo in self.photoList:
 
@@ -116,7 +119,7 @@ class PhotoFramer:
         sys.stdout.flush()
 
         # Match?
-        if photo.orientation != mockup.orientation:
+        if photo.orientation != mockup.frameorientation:
           continue
 
         # Add mockup to framed image
