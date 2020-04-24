@@ -1,27 +1,36 @@
-import sys, os
+import sys, os, re
 from PIL import Image
+
+ORIENTATIONS = ["landscape", "portrait", "square"]
 
 class BasicPicture:
   def __init__(self, image):
     self.image = image
-    self.orientation = 'landscape'
     self.lookupBasicInfo()
   def lookupBasicInfo(self):
     self.fullpath = self.image.filename
-    self.filename = os.path.splitext(os.path.basename(self.fullpath))[0]
+    self.filename = os.path.basename(self.fullpath)
     (self.width, self.height) = self.image.size
 
-class Frame(BasicPicture):
+class Mockup(BasicPicture):
   def __init__(self, image):
     super().__init__(image)
-    self.lookupFrameInfo()
-  def lookupFrameInfo(self):
-    if 'portrait' in self.filename:
-      self.orientation = 'portrait'
-    elif 'square' in self.filename:
-      self.orientation = 'square'
-    self.placeCoordinates = (91, 205)
-    self.sizeMax = (700,467)
+    self.lookupMockupInfo()
+    self.valid = True
+    # Check results
+    if not (
+      self.orientation in ORIENTATIONS and
+      self.framewidth > 0 and self.frameheight > 0 and
+      self.framecoordinatex > 0 and self.framecoordinatey > 0
+    ):
+      self.valid = False
+  def lookupMockupInfo(self):
+    info = re.match("^([a-z]{6,9})-s([0-9]+)x([0-9]+)c([0-9]+)x([0-9]+)-", self.filename)
+    self.orientation = info.group(1)
+    self.framewidth = int(info.group(2))
+    self.frameheight = int(info.group(3))
+    self.framecoordinatex = int(info.group(4))
+    self.framecoordinatey = int(info.group(5))
 
 class Photo(BasicPicture):
   def __init__(self, image):
@@ -32,63 +41,111 @@ class Photo(BasicPicture):
       self.orientation = 'portrait'
     elif self.height == self.width:
       self.orientation = 'square'
+    else:
+      self.orientation = 'landscape'
 
 
 class PhotoFramer:
-  frameList = []
+  mockupList = []
   photoList = []
-  def __init__(self, frameDir, photoDir, resultDir):
-    print("Set up photo framer")
-    self.frameDirectory = frameDir
+  def __init__(self, mockupDir, photoDir, resultDir):
+    print("Setting up photo framer...")
+    self.mockupDirectory = mockupDir
     self.photoDirectory = photoDir
     self.resultDirectory = resultDir
-    self.lookupFrames()
+    self.lookupMockups()
     self.lookupPhotos()
 
-  def lookupFrames(self):
-    print("Looking for frames...")
-    for root, dirs, files in os.walk(self.frameDirectory):
+  def lookupMockups(self):
+    print("Looking for mockups...")
+    for root, dirs, files in os.walk(self.mockupDirectory):
       for file in files:
-        if 'jpg' not in file:
-          continue
-        self.frameList.append(Frame(Image.open(os.path.join(root,file))))
-      break
-    print("Found the following frames: ")
-    for frame in self.frameList:
-      sys.stdout.write(frame.filename+" ")
+        try:
+          mockup_im = Image.open(os.path.join(root,file))
+        except:
+          pass
+        else:
+          mockup = Mockup(mockup_im)
+          if mockup.valid:
+            self.mockupList.append(mockup)
+      break # Don't look in subdirs
+
+    print("Found the following mockups: (%d)",(len(self.mockupList)))
+    for mockup in self.mockupList:
+      sys.stdout.write("  "+mockup.filename)
     sys.stdout.flush()
     print()
+
   def lookupPhotos(self):
     print("Looking for photos...")
     for root, dirs, files in os.walk(self.photoDirectory):
       for file in files:
-        if 'jpg' not in file:
-          continue
-        self.photoList.append(Photo(Image.open(os.path.join(root,file))))
-      break
-    print("Found the following photos: ")
+        try:
+          photo_im = Image.open(os.path.join(root,file))
+        except:
+          pass
+        else:
+          self.photoList.append(Photo(photo_im))
+      break # Don't look in subdirs
+
+    print("Found the following photos: (%d)",(len(self.photoList)))
     for photo in self.photoList:
-      sys.stdout.write(photo.filename+" ")
+      sys.stdout.write("  "+photo.filename)
     sys.stdout.flush()
     print()
   
   def assemble(self):
-    print("Getting ready to frame")
-    totalToGoThrough = len(self.frameList)*len(self.photoList)
-    i = 0
-    for frame in self.frameList:
-      for photo in self.photoList:
-        i = i + 1
-        sys.stdout.write("\rFraming photos: %d%%" % (i*100/totalToGoThrough))
+    print("Getting ready to frame...")
+
+    total = len(self.mockupList)*len(self.photoList)
+    progress = 0
+    number_framed = 0
+
+    if total > 150:
+      input("%d photos and %d mockups found. Continue?", (len(self.photoList), len(self.mockupList)))
+
+    for photo in self.photoList:
+
+      for mockup in self.mockupList:
+
+        photocount = int(progress/len(self.mockupList))+1
+        progress += 1
+
+        # Progress bar
+        sys.stdout.write("\rFraming photos: %d%% (photo %d/%d)" % (progress*100/total,photocount,len(self.photoList)))
         sys.stdout.flush()
-        if photo.orientation != frame.orientation:
+
+        # Match?
+        if photo.orientation != mockup.orientation:
           continue
-        if i > 50:
-          return
-        framed = Image.new('RGB', (frame.width, frame.height))
-        framed.paste(frame.image)
-        resizedImage = photo.image.resize(frame.sizeMax)
-        framed.paste(resizedImage, frame.placeCoordinates)
-        framed.save(os.path.join(self.resultDirectory, "framed-"+str(i)+".jpg"))
-    print("\nFramed! Check in directory "+self.resultDirectory)
+
+        # Add mockup to framed image
+        framed = Image.new('RGB', (mockup.width, mockup.height))
+        framed.paste(mockup.image)
+
+        # Resize photo to enter the frame
+        frameratio = mockup.framewidth/mockup.frameheight
+        photoratio = photo.width/photo.height
+        resizer = (mockup.framewidth,mockup.frameheight)
+        if photoratio > frameratio:
+          resizer = (mockup.framewidth,int(mockup.framewidth/photoratio))
+        elif photoratio < frameratio:
+          resizer = (mockup.frameheight*photoratio,mockup.frameheight)
+
+        # If one side doesn't stick, implement padding
+        resizer = tuple(int(x*0.95) for x in resizer)
+
+        # Resize image
+        resizedimage = photo.image.resize(resizer)
+
+        # Paste photo in frame
+        coordx = int(mockup.framecoordinatex+(mockup.framewidth-resizer[0])/2)
+        coordy = int(mockup.framecoordinatey+(mockup.frameheight-resizer[1])/2)
+        framed.paste(resizedimage, (coordx, coordy))
+
+        # Save resulting image
+        number_framed += 1
+        framed.save(os.path.join(self.resultDirectory, "framed-"+str(number_framed)+".jpg"))
+
+    print("\nFramed! Check for result in directory "+self.resultDirectory)
 
