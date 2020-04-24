@@ -91,30 +91,4 @@ class PhotoFramer:
         framed.paste(resizedImage, frame.placeCoordinates)
         framed.save(os.path.join(self.resultDirectory, "framed-"+str(i)+".jpg"))
     print("\nFramed! Check in directory "+self.resultDirectory)
-    
 
-  
-
-# photo_im = Image.open('../Portfolio/DSC01297__Portfolio.jpg').copy()
-# (width, height) = photo_im.size
-
-# # Paths to frame and photo
-# if width > height:
-#   frame_im = Image.open('../Frames/landscape-basic-poster-frame.jpg')
-# else:
-#   frame_im = Image.open('../Frames/portrait-basic-poster-frame.jpg')
-
-# # Create result image
-# framed_im = Image.new('RGB', (880,880)) #creates a new empty image, RGB mode, and size 444 by 95
-
-# # Add frame
-# framed_im.paste(frame_im, (0,0))
-
-# # Add photo
-# new_width = 700
-# new_height = int(height*new_width/width)
-# photo_im = photo_im.resize((new_width,new_height)) 
-# framed_im.paste(photo_im, (91,205))
-
-# # Save
-# framed_im.save('../Result/test.jpg')
