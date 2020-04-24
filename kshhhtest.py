@@ -6,6 +6,10 @@ def testMockup(mockuppath, spacesize, spacecoordinates):
   photo_im = Image.open(testfilepath)
   mockup_im = Image.open(mockuppath)
 
+  # If trying portrait, transpose test image
+  if spacesize[1] > spacesize[0]:
+    photo_im = photo_im.transpose(Image.ROTATE_90)
+
   # Create result image
   framed_im = Image.new('RGB', mockup_im.size)
   # Add mockup
