@@ -36,7 +36,7 @@ def testMockup(mockuppath, spacesize, spacecoordinates):
 # Will handle main here before handing off to frame test function
 if __name__ == "__main__":
   if len(sys.argv)-1 != 5:
-    raise Exception('USE THIS WAY: python testframe.py path/to/mockup framewidth frameheight framestartx framestarty')
+    raise Exception('USE THIS WAY: python kshhhtest.py path/to/mockup framewidth frameheight framestartx framestarty')
 
   # Check mockup is an image
   mockuppath = sys.argv[1]
