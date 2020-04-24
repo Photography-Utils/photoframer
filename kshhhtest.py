@@ -26,7 +26,7 @@ def testMockup(mockuppath, spacesize, spacecoordinates):
     mockupname = "square"
   mockupname += "-s"+str(spacesize[0])+"x"+str(spacesize[1])
   mockupname += "c"+str(spacecoordinates[0])+"x"+str(spacecoordinates[1])
-  mockupname += "-"+os.path.basename(framepath)
+  mockupname += "-"+os.path.basename(mockuppath)
   print(mockupname)
 
 # Will handle main here before handing off to frame test function
