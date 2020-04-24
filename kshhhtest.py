@@ -1,13 +1,13 @@
 import sys, os
 from PIL import Image
 
-def testMockup(mockuppath, spacesize, spacecoordinates):
+def testMockup(mockuppath, framesize, framecoordinates):
   testfilepath = os.path.join(os.path.dirname(os.path.realpath(__file__)),"imageformockuptest.jpg")
   photo_im = Image.open(testfilepath)
   mockup_im = Image.open(mockuppath)
 
   # If trying portrait, transpose test image
-  if spacesize[1] > spacesize[0]:
+  if framesize[1] > framesize[0]:
     photo_im = photo_im.transpose(Image.ROTATE_90)
 
   # Create result image
@@ -15,21 +15,21 @@ def testMockup(mockuppath, spacesize, spacecoordinates):
   # Add mockup
   framed_im.paste(mockup_im, (0,0))
   # Resize photo to space size
-  resizedphoto_im = photo_im.resize(spacesize)
+  resizedphoto_im = photo_im.resize(framesize)
   # Add photo to frame at coordinates
-  framed_im.paste(resizedphoto_im, spacecoordinates)
+  framed_im.paste(resizedphoto_im, framecoordinates)
   # Save result in working dir
   framed_im.save(os.path.join(os.getcwd(), 'isItFramedOk.jpg'))
 
   # Helper for frame name in case it's good
   print("If this result is good (meaning you dimensioned the frame correctly and the photo fits perfectly in it), you should rename the frame as follows in order to use it as a frame for kshhhactivate:")
   mockupname = "landscape"
-  if spacesize[0] < spacesize[1]:
+  if framesize[0] < framesize[1]:
     mockupname = "portrait"
-  elif spacesize[0] == spacesize[1]:
+  elif framesize[0] == framesize[1]:
     mockupname = "square"
-  mockupname += "-s"+str(spacesize[0])+"x"+str(spacesize[1])
-  mockupname += "c"+str(spacecoordinates[0])+"x"+str(spacecoordinates[1])
+  mockupname += "-s"+str(framesize[0])+"x"+str(framesize[1])
+  mockupname += "c"+str(framecoordinates[0])+"x"+str(framecoordinates[1])
   mockupname += "-"+os.path.basename(mockuppath)
   print(mockupname)
 
