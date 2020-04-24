@@ -51,8 +51,9 @@ class Photo(BasicPicture):
 class PhotoFramer:
   mockupList = []
   photoList = []
-  def __init__(self, mockupDir, photoDir, resultDir):
+  def __init__(self, mockupDir, photoDir, resultDir, blunt):
     print("Setting up photo framer...")
+    self.beBlunt = blunt
     self.mockupDirectory = mockupDir
     self.photoDirectory = photoDir
     self.resultDirectory = resultDir
@@ -100,6 +101,9 @@ class PhotoFramer:
   def assemble(self):
     print("Getting ready to frame...")
 
+    if self.beBlunt:
+      print("Blunt mode on - photo ratio could change to fit frame")
+
     total = len(self.mockupList)*len(self.photoList)
     progress = 0
     number_framed = 0
@@ -126,24 +130,34 @@ class PhotoFramer:
         framed = Image.new('RGB', (mockup.width, mockup.height))
         framed.paste(mockup.image)
 
-        # Resize photo to enter the frame
-        frameratio = mockup.framewidth/mockup.frameheight
-        photoratio = photo.width/photo.height
+        # Set for blunt mode, will be overwritten if not blunt mode
+        (coordx,coordy) = (mockup.framecoordinatex,mockup.framecoordinatey)
         resizer = (mockup.framewidth,mockup.frameheight)
-        if photoratio > frameratio:
-          resizer = (mockup.framewidth,int(mockup.framewidth/photoratio))
-        elif photoratio < frameratio:
-          resizer = (mockup.frameheight*photoratio,mockup.frameheight)
 
-        # If one side doesn't stick, implement padding
-        resizer = tuple(int(x*0.95) for x in resizer)
+        if not self.beBlunt:
+          # If not blunt mode, will keep image ratio
 
-        # Resize image
+          # Resize photo to enter the frame
+          frameratio = mockup.framewidth/mockup.frameheight
+          photoratio = photo.width/photo.height
+          resizer = (mockup.framewidth,mockup.frameheight)
+          if photoratio > frameratio:
+            resizer = (mockup.framewidth,int(mockup.framewidth/photoratio))
+          elif photoratio < frameratio:
+            resizer = (mockup.frameheight*photoratio,mockup.frameheight)
+
+          # If one side doesn't stick, implement padding
+          resizer = tuple(int(x*0.95) for x in resizer)
+
+          # Resize image
+          resizedimage = photo.image.resize(resizer)
+
+          # Work out coordinates
+          coordx = int(mockup.framecoordinatex+(mockup.framewidth-resizer[0])/2)
+          coordy = int(mockup.framecoordinatey+(mockup.frameheight-resizer[1])/2)
+
+        # Resize and place image
         resizedimage = photo.image.resize(resizer)
-
-        # Paste photo in frame
-        coordx = int(mockup.framecoordinatex+(mockup.framewidth-resizer[0])/2)
-        coordy = int(mockup.framecoordinatey+(mockup.frameheight-resizer[1])/2)
         framed.paste(resizedimage, (coordx, coordy))
 
         # Save resulting image

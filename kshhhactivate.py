@@ -3,7 +3,7 @@ import sys, os
 from FramePhotoLib import PhotoFramer
 
 if __name__ == "__main__":
-  if len(sys.argv)-1 != 3:
+  if 4 < len(sys.argv)-1 < 3:
     raise Exception('USE THIS WAY: python kshhhactivate.py path/to/mockupdir path/to/photodir path/to/resultdir')
 
   # Check all arguments are directories
@@ -19,6 +19,14 @@ if __name__ == "__main__":
   print("Photo: "+photodir)
   print("Result: "+resultdir)
 
+  useBluntTransformation = False
+  try:
+    a = sys.argv[4]
+    if a == "blunt":
+      useBluntTransformation = True
+  except:
+    useBluntTransformation = False
+
   # Go do the job!
-  framer = PhotoFramer(mockupdir, photodir, resultdir)
+  framer = PhotoFramer(mockupdir, photodir, resultdir, useBluntTransformation)
   framer.assemble()
