@@ -20,6 +20,9 @@ Now that you have your mockups renamed okay, put all your mockups in the same di
 Put all your photos you want to frame in another directory.
 In a terminal, run:
   python kshhhactivate.py path/to/mockupdir path/to/photodir path/to/resultdir
+There is a blunt mode you can use by adding the word blunt as an extra parameter to the previous command. This mode will not keep ratio of photos, and fit them into the frame perfectly no matter what.
+
+Bear in mind, original photos are never modified them being mockup images or your to-be-framed photos.
 
 You will find the resuling framed photos in your directory path/to/resultdir.
 Enjoy!
