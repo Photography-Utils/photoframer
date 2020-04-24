@@ -109,7 +109,8 @@ class PhotoFramer:
     number_framed = 0
 
     if total > 150:
-      input("LOTS AND LOTS! %d photos and %d mockups found. Continue? [Enter]", (len(self.photoList), len(self.mockupList)))
+      printstring = "LOTS AND LOTS! "+str(len(self.photoList))+" photos and "+str(len(self.mockupList))+" mockups found. Continue? [Enter]"
+      input(printstring)
 
     for photo in self.photoList:
 
