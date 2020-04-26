@@ -33,7 +33,7 @@ def testMockup(mockuppath, framesize, framecoordinates):
   mockupname += "-"+os.path.basename(mockuppath)
   print(mockupname)
 
-  signal.alarm(3)
+  signal.alarm(2)
   answer = input("Rename mockup to suggested name? y/N ")
   signal.alarm(0)
   if answer == 'Y' or answer == 'y':
