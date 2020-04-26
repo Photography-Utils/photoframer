@@ -28,9 +28,6 @@ class Mockup(BasicPicture):
       self.frameheight = int(info.group(3))
       self.framecoordinatex = int(info.group(4))
       self.framecoordinatey = int(info.group(5))
-      # less than 2% side difference ratio - consider it square
-      if 0.98 < 100*self.framewidth/self.frameheight < 1.02:
-        self.frameorientation = square
     except:
       # Could not find info
       self.valid = False
@@ -50,7 +47,10 @@ class Photo(BasicPicture):
     super().__init__(image)
     self.lookupPhotoInfo()
   def lookupPhotoInfo(self):
-    if self.height > self.width:
+    # less than 2% side difference ratio - consider it square
+    if 0.98 < self.height/self.width < 1.02:
+      self.orientation = "square"
+    elif self.height > self.width:
       self.orientation = 'portrait'
     elif self.height == self.width:
       self.orientation = 'square'
