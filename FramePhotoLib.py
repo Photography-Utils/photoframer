@@ -28,11 +28,9 @@ class Mockup(BasicPicture):
       self.frameheight = int(info.group(3))
       self.framecoordinatex = int(info.group(4))
       self.framecoordinatey = int(info.group(5))
-      print(self.frameorientation)
-      print(self.framewidth)
-      print(self.frameheight)
-      print(self.framecoordinatex)
-      print(self.framecoordinatey)
+      # less than 2% side difference ratio - consider it square
+      if 0.98 < 100*self.framewidth/self.frameheight < 1.02:
+        self.frameorientation = square
     except:
       # Could not find info
       self.valid = False
@@ -190,7 +188,7 @@ class PhotoFramer:
 
         # Save resulting image
         number_framed += 1
-        framed.save(os.path.join(self.resultDirectory, "framed-"+os.path.splitext(photo.filename)[0]+".jpg"))
+        framed.save(os.path.join(self.resultDirectory, os.path.splitext(photo.filename)[0]+"-framed-"+str(number_framed)+".jpg"))
 
     print("\nFramed! Check for result in directory "+self.resultDirectory)
 
