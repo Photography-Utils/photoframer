@@ -32,8 +32,7 @@ def testMockup(mockuppath, framesize, framecoordinates):
   mockupname += "c"+str(framecoordinates[0])+"x"+str(framecoordinates[1])
   mockupname += "-"+os.path.basename(mockuppath)
   print(mockupname)
-  print("Rename mockup to suggested name? y/N ")
-  answer = input()
+  answer = input("Rename mockup to suggested name? y/N ")
   if answer == 'Y' or answer == 'y':
     resultfile = os.path.join(os.path.dirname(mockuppath),mockupname)
     os.rename(r''+mockuppath, r''+resultfile)
