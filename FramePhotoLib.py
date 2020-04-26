@@ -13,26 +13,38 @@ class BasicPicture:
     self.filename = os.path.basename(self.fullpath)
     (self.width, self.height) = self.image.size
 
+
 class Mockup(BasicPicture):
   # Information specific to mockups
   def __init__(self, image):
     super().__init__(image)
-    self.lookupMockupInfo()
     self.valid = True
-    # Check results
-    if not (
-      self.frameorientation in ORIENTATIONS and
-      self.framewidth > 0 and self.frameheight > 0 and
-      self.framecoordinatex > 0 and self.framecoordinatey > 0
-    ):
-      self.valid = False
+    self.lookupMockupInfo()
   def lookupMockupInfo(self):
-    info = re.match("^([a-z]{6,9})-s([0-9]+)x([0-9]+)c([0-9]+)x([0-9]+)-", self.filename)
-    self.frameorientation = info.group(1)
-    self.framewidth = int(info.group(2))
-    self.frameheight = int(info.group(3))
-    self.framecoordinatex = int(info.group(4))
-    self.framecoordinatey = int(info.group(5))
+    info = re.search("(portrait|landscape|square)-s([0-9]+)x([0-9]+)c([0-9]+)x([0-9]+)", self.filename)
+    try:
+      self.frameorientation = info.group(1)
+      self.framewidth = int(info.group(2))
+      self.frameheight = int(info.group(3))
+      self.framecoordinatex = int(info.group(4))
+      self.framecoordinatey = int(info.group(5))
+      print(self.frameorientation)
+      print(self.framewidth)
+      print(self.frameheight)
+      print(self.framecoordinatex)
+      print(self.framecoordinatey)
+    except:
+      # Could not find info
+      self.valid = False
+    else:
+      # Check results
+      if not (
+        self.frameorientation in ORIENTATIONS and
+        self.framewidth > 0 and self.frameheight > 0 and
+        self.framecoordinatex > 0 and self.framecoordinatey > 0
+      ):
+        self.valid = False
+
 
 class Photo(BasicPicture):
   # Information specific to photos
@@ -48,6 +60,7 @@ class Photo(BasicPicture):
       self.orientation = 'landscape'
 
 
+# The big photo framer class
 class PhotoFramer:
   mockupList = []
   photoList = []
@@ -59,6 +72,7 @@ class PhotoFramer:
     self.resultDirectory = resultDir
     self.lookupMockups()
     self.lookupPhotos()
+
 
   def lookupMockups(self):
     print("Looking for mockups...")
@@ -74,11 +88,15 @@ class PhotoFramer:
             self.mockupList.append(mockup)
       break # Don't look in subdirs
 
-    print("Found the following mockups: (%d)",(len(self.mockupList)))
-    for mockup in self.mockupList:
-      sys.stdout.write("  "+mockup.filename)
-    sys.stdout.flush()
-    print()
+    if len(self.mockupList) > 0:
+      print("Found the following mockups: (",len(self.mockupList),")")
+      for mockup in self.mockupList:
+        sys.stdout.write("  "+mockup.filename)
+      sys.stdout.flush()
+      print()
+    else:
+      print("Nada mockup found.")
+
 
   def lookupPhotos(self):
     print("Looking for photos...")
@@ -92,12 +110,16 @@ class PhotoFramer:
           self.photoList.append(Photo(photo_im))
       break # Don't look in subdirs
 
-    print("Found the following photos: (%d)",(len(self.photoList)))
-    for photo in self.photoList:
-      sys.stdout.write("  "+photo.filename)
-    sys.stdout.flush()
-    print()
+    if len(self.photoList) > 0:
+      print("Found the following photos: (",len(self.photoList),")")
+      for photo in self.photoList:
+        sys.stdout.write("  "+photo.filename)
+      sys.stdout.flush()
+      print()
+    else:
+      print("Niet photo found.")
   
+
   def assemble(self):
     print("Getting ready to frame...")
 
@@ -108,10 +130,15 @@ class PhotoFramer:
     progress = 0
     number_framed = 0
 
+    if len(self.photoList) == 0 or len(self.mockupList) == 0:
+      print("Nothing to assemble. No photo detected or mockup detected (well, or both).")
+      return
+
     if total > 150:
       printstring = "LOTS AND LOTS! "+str(len(self.photoList))+" photos and "+str(len(self.mockupList))+" mockups found. Continue? [Enter]"
       input(printstring)
 
+    # Will parse through photos and mockups
     for photo in self.photoList:
 
       for mockup in self.mockupList:
@@ -163,7 +190,7 @@ class PhotoFramer:
 
         # Save resulting image
         number_framed += 1
-        framed.save(os.path.join(self.resultDirectory, "framed-"+str(number_framed)+".jpg"))
+        framed.save(os.path.join(self.resultDirectory, "framed-"+os.path.splitext(photo.filename)[0]+".jpg"))
 
     print("\nFramed! Check for result in directory "+self.resultDirectory)
 

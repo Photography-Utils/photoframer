@@ -3,8 +3,9 @@ import sys, os
 from FramePhotoLib import PhotoFramer
 
 if __name__ == "__main__":
-  if 4 < len(sys.argv)-1 < 3:
-    raise Exception('USE THIS WAY: python kshhhactivate.py path/to/mockupdir path/to/photodir path/to/resultdir')
+  argnumber = len(sys.argv)-1
+  if not 3 <= argnumber <= 4:
+    raise Exception('USE THIS WAY: python kshhhactivate.py path/to/mockupdir path/to/photodir path/to/resultdir [blunt]')
 
   # Check all arguments are directories
   if not os.path.isdir(sys.argv[1]) or not os.path.isdir(sys.argv[2]) or not os.path.isdir(sys.argv[3]):

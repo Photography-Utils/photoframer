@@ -23,14 +23,15 @@ def testMockup(mockuppath, framesize, framecoordinates):
 
   # Helper for frame name in case it's good
   print("If this result is good (meaning you dimensioned the frame correctly and the photo fits perfectly in it), you should rename the frame as follows in order to use it as a frame for kshhhactivate:")
-  mockupname = "landscape"
+  mockupnameadd = "landscape"
   if framesize[0] < framesize[1]:
-    mockupname = "portrait"
+    mockupnameadd = "portrait"
   elif framesize[0] == framesize[1]:
-    mockupname = "square"
-  mockupname += "-s"+str(framesize[0])+"x"+str(framesize[1])
-  mockupname += "c"+str(framecoordinates[0])+"x"+str(framecoordinates[1])
-  mockupname += "-"+os.path.basename(mockuppath)
+    mockupnameadd = "square"
+  mockupnameadd += "-s"+str(framesize[0])+"x"+str(framesize[1])
+  mockupnameadd += "c"+str(framecoordinates[0])+"x"+str(framecoordinates[1])
+  (mockupnamenoext, ext) = os.path.splitext(os.path.basename(mockuppath))
+  mockupname = mockupnamenoext+"-"+mockupnameadd+ext
   print(mockupname)
 
   signal.alarm(2)
