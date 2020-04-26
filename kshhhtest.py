@@ -35,8 +35,9 @@ def testMockup(mockuppath, framesize, framecoordinates):
 
 # Will handle main here before handing off to frame test function
 if __name__ == "__main__":
-  if len(sys.argv)-1 != 5:
-    raise Exception('USE THIS WAY: python kshhhtest.py path/to/mockup framewidth frameheight framestartx framestarty')
+  argnumber = len(sys.argv)-1
+  if not 4 <= argnumber <= 5:
+    raise Exception('USE THIS WAY: python kshhhtest.py path/to/mockup framewidth [frameheight] framestartx framestarty')
 
   # Check mockup is an image
   mockuppath = sys.argv[1]
@@ -49,9 +50,14 @@ if __name__ == "__main__":
   (framewidth,frameheight,framestartx,framestarty) = (0,0,0,0)
   try:
     framewidth = int(sys.argv[2])
-    frameheight = int(sys.argv[3])
-    framestartx = int(sys.argv[4])
-    framestarty = int(sys.argv[5])
+
+    # If 3 arguments, frameheight is framewidth -> square
+    # If 4 arguments, different argument for framewidth
+    frameheightindex = argnumber - 2
+
+    frameheight = int(sys.argv[frameheightindex])
+    framestartx = int(sys.argv[frameheightindex+1])
+    framestarty = int(sys.argv[frameheightindex+2])
   except:
     raise Exception('Some frame dimensions are not numbers')
 

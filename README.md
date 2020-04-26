@@ -8,7 +8,7 @@ It's all automatic if it's set right (easy).
 Take a mockup file with a frame in it. You need to know where the actual photo frame is in the mockup file.
 To do so, use the program kshhhtest.py.
 It runs as such in a terminal:
-  python kshhhtest.py path/to/mockup framewidth frameheight framestartx framestarty
+  python kshhhtest.py path/to/mockup framewidth [frameheight] framestartx framestarty
 
 Where you started the command, check the file "isItFramedOk.jpg".
 If the photo fits perfectly into the mockup frame, then rename your mockup file with the suggestion in the terminal.
