@@ -33,3 +33,5 @@ You will find the resuling framed photos in your directory path/to/resultdir.
 /!\ Don't work with originals, work with copies! Original photos are never modified, BUT I'd advise to have a copy of them.
 
 Enjoy!
+
+PS: Mockups generated with https://mockupeditor.com/ and https://canvy.app/
