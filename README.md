@@ -27,8 +27,9 @@ In a terminal, run:
 
 All paths must exist, even the path/to/resultdir. There is a blunt mode you can use by adding the word blunt as an extra parameter to the previous command. This mode will not keep ratio of photos, and fit them into the frame perfectly no matter what.
 
+You will find the resuling framed photos in your directory path/to/resultdir.
+
 
 /!\ Don't work with originals, work with copies! Original photos are never modified, BUT I'd advise to have a copy of them.
 
-You will find the resuling framed photos in your directory path/to/resultdir.
 Enjoy!
