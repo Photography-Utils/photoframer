@@ -1,4 +1,4 @@
-import sys, os
+import sys, os, signal
 from PIL import Image
 
 def testMockup(mockuppath, framesize, framecoordinates):
@@ -32,7 +32,10 @@ def testMockup(mockuppath, framesize, framecoordinates):
   mockupname += "c"+str(framecoordinates[0])+"x"+str(framecoordinates[1])
   mockupname += "-"+os.path.basename(mockuppath)
   print(mockupname)
+
+  signal.alarm(3)
   answer = input("Rename mockup to suggested name? y/N ")
+  signal.alarm(0)
   if answer == 'Y' or answer == 'y':
     resultfile = os.path.join(os.path.dirname(mockuppath),mockupname)
     os.rename(r''+mockuppath, r''+resultfile)
