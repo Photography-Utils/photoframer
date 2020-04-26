@@ -32,8 +32,14 @@ def testMockup(mockuppath, framesize, framecoordinates):
   mockupname += "c"+str(framecoordinates[0])+"x"+str(framecoordinates[1])
   mockupname += "-"+os.path.basename(mockuppath)
   print(mockupname)
+  print("Rename mockup to suggested name? y/N ")
+  answer = input()
+  if answer == 'Y' or answer == 'y':
+    resultfile = os.path.join(os.path.dirname(mockuppath),mockupname)
+    os.rename(r''+mockuppath, r''+resultfile)
+    print("File renamed, now ready to use with kshhhactivate.py")
 
-# Will handle main here before handing off to frame test function
+# Will handle main here before handing off to mockup test function
 if __name__ == "__main__":
   argnumber = len(sys.argv)-1
   if not 4 <= argnumber <= 5:
