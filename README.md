@@ -5,10 +5,10 @@ You can use any mockup you want, portrait, square or landscape, and frame any ph
 
 
 ## Prerequisites
-- Python version > 3: https://docs.python-guide.org/starting/install3/osx/
+- Python 3: https://docs.python-guide.org/starting/install3/osx/
 - Python PIL library: ```python3 -m pip install Pillow ```
 
-## 1 Get the mockup frame information
+## 1. Get the mockup frame information
 
 Take a mockup file with a frame in it. You need to know where the actual photo frame is in the mockup file.
 To do so, use the program kshhhtest.py.
@@ -23,7 +23,7 @@ If the photo fits perfectly into the mockup frame, then rename your mockup file 
 If not perfect, reiterate with different parameters. Bear in mind, DO NOT allow for white spaces inside the frame - in other words, make your photo stick to the frame as accurately as possible, you will have the possibility to enter a mode later that puts white spaces as passepartouts.
 
 
-## 2 Frame all your photos
+## 2. Frame all your photos
 
 Now that you have your mockups renamed okay, put all your mockups in the same directory.
 Put all your photos you want to incorporate into these mockups in another directory.
