@@ -51,6 +51,8 @@ In a terminal, run:
 - --passepartout=off_frame_size:
 	Set passepartout on frames to off_frame_size% of frame longest edge
 
+Bear in mind, passepartout cannot be constant all around the photo if you don't enable the --resize option along with it.
+
 Mandatory arguments are:
 - First a path to the directory with mockups
 - Second a path to the directory with photos to frame
