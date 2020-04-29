@@ -4,6 +4,8 @@ from PIL import Image
 
 ORIENTATIONS = ["landscape", "portrait", "square"]
 
+#
+# Role: hold information every image will need
 class BasicPicture:
   # Basic information of an image object
   def __init__(self, image):
@@ -14,7 +16,10 @@ class BasicPicture:
     self.filename = os.path.basename(self.fullpath)
     (self.width, self.height) = self.image.size
 
-
+#
+# Role: hold information on mockups
+#   - mockup image size
+#   - frame orientation and size
 class Mockup(BasicPicture):
   # Information specific to mockups
   def __init__(self, image):
@@ -41,7 +46,9 @@ class Mockup(BasicPicture):
       ):
         self.valid = False
 
-
+#
+# Role: hold information on photos
+#   - orientation and size
 class Photo(BasicPicture):
   # Information specific to photos
   def __init__(self, image):
@@ -58,8 +65,12 @@ class Photo(BasicPicture):
     else:
       self.orientation = 'landscape'
 
-
+#
 # The big photo framer class
+# Role: hold information on
+#   - what to frame
+#   - how to frame it
+#  and frame everything together
 class PhotoFramer:
   mockupList = []
   photoList = []
@@ -78,7 +89,7 @@ class PhotoFramer:
     self.lookupMockups()
     self.lookupPhotos()
 
-
+  # Role: look up mockups in self.mockupdirectory
   def lookupMockups(self):
     print("Looking for mockups...")
     for root, dirs, files in os.walk(self.mockupDirectory):
@@ -103,7 +114,7 @@ class PhotoFramer:
     else:
       print("Nada mockup found.")
 
-
+  # Role: look up photos in self.photodirectory
   def lookupPhotos(self):
     print("Looking for photos...")
     for root, dirs, files in os.walk(self.photoDirectory):
@@ -126,7 +137,10 @@ class PhotoFramer:
     else:
       print("Niet photo found.")
   
-
+  # Role: create the result image by
+  #   - opening the mockup mockup
+  #   - pasting the photo photo inside the mockup
+  #   - saving the result file with framed photo with index numberframed
   def placePhotoInFrame(self,mockup,photo,numberframed):
     # Add mockup to framed image
     framed = Image.new('RGB', (mockup.width, mockup.height))
@@ -147,7 +161,19 @@ class PhotoFramer:
         resizer = (mockup.frameheight*photoratio,mockup.frameheight)
 
     # Implement padding to rate of passepartout
-    resizer = tuple(int(x*self.passepartout/100) for x in resizer)
+    if mockup.frameorientation == "square":
+      if photo.width > photo.height:
+        totakeoff = resizer[0]-int(resizer[0]*self.passepartout/100)
+      else:
+        totakeoff = resizer[1]-int(resizer[1]*self.passepartout/100)
+    elif mockup.frameorientation == "portrait":
+      # take out % of height
+      totakeoff = resizer[1]-int(resizer[1]*self.passepartout/100)
+    else: # landscape
+      # take out % of width
+      totakeoff = resizer[0]-int(resizer[0]*self.passepartout/100)
+    
+    resizer = tuple(int(x-totakeoff) for x in resizer)
 
     # Work out coordinates
     coordx = int(mockup.framecoordinatex+(mockup.framewidth-resizer[0])/2)
@@ -160,7 +186,7 @@ class PhotoFramer:
     # Save resulting image
     framed.save(os.path.join(self.resultDirectory, os.path.splitext(photo.filename)[0]+"-framed-"+str(numberframed.value)+".jpg"))
 
-
+  # Role: progress bar thread
   def printProgress(self,numberframed,total):
     reduction = 2.5
     oldvalue = numberframed.value
@@ -182,6 +208,7 @@ class PhotoFramer:
       oldvalue = numberframed.value
     self.printOutput(False,total,total,reduction,0,characters,characteri)
 
+  # Role: print progress bar info
   def printOutput(self,start,number,total,reduction,oldvalue,characters,characteri):
     barlength = int(100/reduction)
     startstring = "Framing photos: "
@@ -198,6 +225,9 @@ class PhotoFramer:
       sys.stdout.write("(%d/%d)" % (number,total))
       sys.stdout.flush()
 
+  # Role: handles assembling photos into what frames into what mockups
+  #  from start to end, printing traces etc,
+  #  essentially organising the framing altogether
   def assemble(self):
     print()
     print("Getting ready to frame...")

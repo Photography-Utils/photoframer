@@ -43,9 +43,9 @@ python kshhhactivate.py
 - -y/--yes:
 	Will not ask any question
 - -p:
-	Set passepartout on frames to 95% of frame size
-- --passepartout=%off_frame_size:
-	Specific percentage for passepartout on frames
+	Set passepartout on frames to 95% of frame longest edge
+- --passepartout=off_frame_size:
+	Set passepartout on frames to off_frame_size% of frame longest edge
 
 Mandatory arguments are:
 - First a path to the directory with mockups
