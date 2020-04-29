@@ -17,7 +17,11 @@ It runs as such in a terminal:
 ```bash
 ./test-mockup.sh path/to/mockup framewidth [frameheight] framestartx framestarty
 ```
-
+- framewidth: width of frame the image will fit in
+- frameheight: (optional if for square) height of frame the image will fit in
+- framestartx: x coordinates where the frame starts int the mockup image from the top left corner
+- framestarty: y coordinates where the frame starts int the mockup image from the top left corner
+  
 Where you started the command, check the file __isItFramedOk.jpg__.
 If the photo fits perfectly into the mockup frame, then rename your mockup file with the suggestion in the terminal.
 If not perfect, reiterate with different parameters. Bear in mind, DO NOT allow for white spaces inside the frame - in other words, make your photo stick to the frame as accurately as possible, you will have the possibility to enter a mode later that puts white spaces as passepartouts.
