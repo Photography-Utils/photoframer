@@ -3,7 +3,7 @@ import sys, os, getopt
 from FramePhotoLib import PhotoFramer
 
 def help(message = ""):
-  print('Help: python kshhhactivate.py [-h] [-d] [-r] [-y] [-p] [--passepartout[:%off_frame_size]] path/to/mockupdir path/to/photodir path/to/resultdir')
+  print('Help - parameters: [-h] [-d] [-r] [-y] [-p] [--passepartout[:%off_frame_size]] path/to/mockupdir path/to/photodir path/to/resultdir')
   print("Available options are:")
   print("-h/--help:\n\tPrint this message")
   print("-d/--debug:\n\tEnable debug messages")
