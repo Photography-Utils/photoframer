@@ -1,4 +1,4 @@
-import sys, os, re, time, copy
+import sys, os, re, time
 import multiprocessing
 from PIL import Image
 
@@ -63,12 +63,18 @@ class Photo(BasicPicture):
 class PhotoFramer:
   mockupList = []
   photoList = []
-  def __init__(self, mockupDir, photoDir, resultDir, blunt):
+  def __init__(self, mockupDir, photoDir, resultDir, resizingallowed = False, noask = False, passepartout = 100, debug = False):
     print("Setting up photo framer...")
-    self.beBlunt = blunt
+    # Options
+    self.resizingallowed = resizingallowed
+    self.noask = noask
+    self.passepartout = passepartout
+    self.debug = debug
+    # Directories
     self.mockupDirectory = mockupDir
     self.photoDirectory = photoDir
     self.resultDirectory = resultDir
+    # Lookup
     self.lookupMockups()
     self.lookupPhotos()
 
@@ -88,11 +94,12 @@ class PhotoFramer:
       break # Don't look in subdirs
 
     if len(self.mockupList) > 0:
-      print("Found the following mockups: (",len(self.mockupList),")")
-      for mockup in self.mockupList:
-        sys.stdout.write("  "+mockup.filename)
-      sys.stdout.flush()
-      print()
+      print("Found",len(self.mockupList),"mockups")
+      if self.debug:
+        for mockup in self.mockupList:
+          sys.stdout.write("  "+mockup.filename)
+        sys.stdout.flush()
+        print()
     else:
       print("Nada mockup found.")
 
@@ -110,11 +117,12 @@ class PhotoFramer:
       break # Don't look in subdirs
 
     if len(self.photoList) > 0:
-      print("Found the following photos: (",len(self.photoList),")")
-      for photo in self.photoList:
-        sys.stdout.write("  "+photo.filename)
-      sys.stdout.flush()
-      print()
+      print("Found",len(self.photoList),"photos")
+      if self.debug:
+        for photo in self.photoList:
+          sys.stdout.write("  "+photo.filename)
+        sys.stdout.flush()
+        print()
     else:
       print("Niet photo found.")
   
@@ -124,13 +132,11 @@ class PhotoFramer:
     framed = Image.new('RGB', (mockup.width, mockup.height))
     framed.paste(mockup.image)
 
-    # Set for blunt mode, will be overwritten if not blunt mode
-    (coordx,coordy) = (mockup.framecoordinatex,mockup.framecoordinatey)
-    resizer = (mockup.framewidth,mockup.frameheight)
-
-    if not self.beBlunt:
-      # If not blunt mode, will keep image ratio
-
+    if self.resizingallowed:
+      # Fit to frame no matter what the photo image
+      resizer = (mockup.framewidth,mockup.frameheight)
+    else:
+      # If resizing not allowed, will keep image ratio
       # Resize photo to enter the frame
       frameratio = mockup.framewidth/mockup.frameheight
       photoratio = photo.width/photo.height
@@ -140,12 +146,12 @@ class PhotoFramer:
       elif photoratio < frameratio:
         resizer = (mockup.frameheight*photoratio,mockup.frameheight)
 
-      # If one side doesn't stick, implement padding
-      resizer = tuple(int(x*0.95) for x in resizer)
+    # Implement padding to rate of passepartout
+    resizer = tuple(int(x*self.passepartout/100) for x in resizer)
 
-      # Work out coordinates
-      coordx = int(mockup.framecoordinatex+(mockup.framewidth-resizer[0])/2)
-      coordy = int(mockup.framecoordinatey+(mockup.frameheight-resizer[1])/2)
+    # Work out coordinates
+    coordx = int(mockup.framecoordinatex+(mockup.framewidth-resizer[0])/2)
+    coordy = int(mockup.framecoordinatey+(mockup.frameheight-resizer[1])/2)
 
     # Resize and place image
     resizedimage = photo.image.resize(resizer)
@@ -193,11 +199,8 @@ class PhotoFramer:
       sys.stdout.flush()
 
   def assemble(self):
+    print()
     print("Getting ready to frame...")
-
-    # Warning if blunt mode enabled
-    if self.beBlunt:
-      print("Blunt mode on - photo ratio could change to fit frame")
 
     # If no mockups or photos available, do nothing
     if len(self.photoList) == 0 or len(self.mockupList) == 0:
@@ -207,6 +210,10 @@ class PhotoFramer:
     # Multiprocessing stuff
     starttime = time.time()
     numberframed = multiprocessing.Value("i", 0)
+
+    # Sum up options for assembling
+    print("Passepartout on frames set to: "+str(self.passepartout)+"%")
+    print("Resizing of photos to fit the frames allowed:",self.resizingallowed)
 
     # Count total mto be assembled
     total = 0
@@ -219,10 +226,10 @@ class PhotoFramer:
         total += 1
         matches.append((photo,mockup))
 
-    message = str(total)+" images to create"
-    if total > 150:
+    message = "Images to create: "+str(total)
+    if total > 150 and not self.noask:
       input("LOTS AND LOTS! "+message+"... Continue? [Enter]")
-    else:
+    elif self.debug:
       print(message)
 
     # Start progress bar process
@@ -240,8 +247,9 @@ class PhotoFramer:
     pr.join()
 
     timespent = int(time.time() - starttime)
-    print("\nFramed "+str(total)+" photos in about "+str(timespent)+" seconds!")
-    print("Check for results in directory "+self.resultDirectory)
+    print("\n\nFramed "+str(total)+" photos in about "+str(timespent)+" seconds!")
+    print("Result images at "+self.resultDirectory)
     print()
-    print("Happy with the result? Support us at https://github.com/Photography-Utils/photoframer")
+    print("Happy? Support us at https://github.com/Photography-Utils/photoframer")
+    print("Thank you (:")
 
