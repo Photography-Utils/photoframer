@@ -24,7 +24,7 @@ It runs as such in a terminal:
   
 Where you started the command, check the file __isItFramedOk.jpg__.
 If the photo fits perfectly into the mockup frame, then rename your mockup file with the suggestion in the terminal.
-If not perfect, reiterate with different parameters. Bear in mind, DO NOT allow for white spaces inside the frame - in other words, make your photo stick to the frame as accurately as possible, you will have the possibility to enter a mode later that puts white spaces as passepartouts.
+If not perfect, reiterate with different parameters. Bear in mind, DO NOT allow for white spaces inside the frame - in other words, make your photo stick to the frame as accurately as possible, you will have the possibility to enter a mode later that puts white spaces as passepartouts*.
 
 
 ## 2. Frame all your photos
@@ -47,11 +47,11 @@ In a terminal, run:
 - -y/--yes:
 	Will not ask any question
 - -p:
-	Set passepartout on frames to 95% of frame longest edge
+	Set passepartout* on frames to 95% of frame longest edge
 - --passepartout=off_frame_size:
-	Set passepartout on frames to off_frame_size% of frame longest edge
+	Set passepartout* on frames to off_frame_size% of frame longest edge
 
-Bear in mind, passepartout cannot be constant all around the photo if you don't enable the --resize option along with it.
+Bear in mind, passepartout* cannot be constant all around the photo if you don't enable the --resize option along with it.
 
 Mandatory arguments are:
 - First a path to the directory with mockups
@@ -64,4 +64,6 @@ All paths must exist, even the path/to/resultdir. All your framed photos will be
 __/!\ Don't work with originals, work with copies! Original photos are never modified, BUT I'd advise to have a copy of them.__
 
 Enjoy!
-You like what we do? Support us at [https://github.com/Photography-Utils/photoframer].
+You like what we do? Sponsor us at [https://github.com/Photography-Utils/photoframer].
+
+* What is a passepartout? It's the space left between the side of the frame and the photo, and it is optional. See more at [https://en.wikipedia.org/wiki/Mat_(picture_framing)]
