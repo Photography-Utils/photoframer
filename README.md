@@ -64,8 +64,7 @@ All paths must exist, even the path/to/resultdir. All your framed photos will be
 __/!\ Don't work with originals, work with copies! Original photos are never modified, BUT I'd advise to have a copy of them.__
 
 Enjoy!
-You like what we do? Sponsor us at [https://github.com/Photography-Utils/photoframer].
-
+You like this? Be a sponsor at [https://github.com/Photography-Utils/photoframer].
 
 Notes:
 * What is a passepartout? It's the space left between the side of the frame and the photo, and it is optional. See more at [https://en.wikipedia.org/wiki/Mat_(picture_framing)]
