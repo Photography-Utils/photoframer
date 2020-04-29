@@ -173,7 +173,11 @@ class PhotoFramer:
       # take out % of width
       totakeoff = resizer[0]-int(resizer[0]*self.passepartout/100)
     
-    resizer = tuple(int(x-totakeoff) for x in resizer)
+    # But only apply if resizing allowed
+    if self.resizingallowed:
+      resizer = tuple(int(x-totakeoff) for x in resizer)
+    else:
+      resizer = tuple(int(x*self.passepartout/100) for x in resizer)
 
     # Work out coordinates
     coordx = int(mockup.framecoordinatex+(mockup.framewidth-resizer[0])/2)
