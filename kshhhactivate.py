@@ -5,11 +5,11 @@ from FramePhotoLib import PhotoFramer
 def help(message = ""):
   print('Help: python kshhhactivate.py [-h] [-d] [-r] [-y] [-p] [--passepartout[:%off_frame_size]] path/to/mockupdir path/to/photodir path/to/resultdir')
   print("Available options are:")
-  print("-h:\n\tPrint this message (help)")
-  print("-d:\n\tEnable debug messages (debug)")
-  print("-r:\n\tAllow resizing of original photo to fit the frame (resize)")
-  print("-y:\n\tWill not ask any question (yes)")
-  print("-p:\n\tSet passepartout on frames to 95% of frame size (passepartout)")
+  print("-h/--help:\n\tPrint this message")
+  print("-d/--debug:\n\tEnable debug messages")
+  print("-r/--resize:\n\tAllow resizing of original photo to fit the frame")
+  print("-y/--yes:\n\tWill not ask any question")
+  print("-p:\n\tSet passepartout on frames to 95% of frame size")
   print("--passepartout=%off_frame_size:\n\tSpecific percentage for passepartout on frames")
   print()
   print("Mandatory arguments are:")
@@ -23,7 +23,7 @@ def help(message = ""):
 def main(argv):
   # Look for options
   try:
-    options, arguments = getopt.getopt(argv, 'hrypd', ["passepartout="])
+    options, arguments = getopt.getopt(argv, 'hrypd', ["passepartout=","help","debug","resize","yes"])
   except:
     help("Some options are invalid")
     return
@@ -36,10 +36,10 @@ def main(argv):
 
   # Look for options set by user
   for opt, arg in options:
-    if opt == '-h':
-      help("Help was asked - will ignore other options")
+    if opt in ('-h','--help'):
+      help("Help was asked - will ignore other options and arguments")
       return
-    elif opt == '-d':
+    elif opt in ('-d','--debug'):
       debug = True
     elif opt == '-p':
       passepartout = 95
@@ -49,9 +49,9 @@ def main(argv):
       except:
         help("Passpartout option needs to be a number")
         return
-    elif opt == '-y':
+    elif opt in ('-y','--yes'):
       noask = True
-    elif opt == '-r':
+    elif opt in ('-r','--resize'):
       resizing = True
 
   # Check we got all the mandatory arguments

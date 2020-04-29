@@ -5,7 +5,7 @@ You can use any mockup you want, portrait, square or landscape, and frame any ph
 
 
 ## Prerequisites
-- Python 3: https://docs.python-guide.org/starting/install3/osx/
+- Python 3: [https://docs.python-guide.org/starting/install3/osx/]
 - Python PIL library: ```python3 -m pip install Pillow ```
 
 ## 1. Get the mockup frame information
@@ -30,12 +30,32 @@ Put all your photos you want to incorporate into these mockups in another direct
 
 In a terminal, run:
 ```bash
-python3 kshhhactivate.py path/to/mockupdir path/to/photodir path/to/resultdir [blunt]
+python kshhhactivate.py
+    [-h] [-d] [-r] [-y] [-p] [--passepartout[:%off_frame_size]]
+    path/to/mockupdir path/to/photodir path/to/resultdir
 ```
+- -h/--help:
+	Print this message
+- -d/--debug:
+	Enable debug messages
+- -r/--resize:
+	Allow resizing of original photo to fit the frame
+- -y/--yes:
+	Will not ask any question
+- -p:
+	Set passepartout on frames to 95% of frame size
+- --passepartout=%off_frame_size:
+	Specific percentage for passepartout on frames
 
-All paths must exist, even the path/to/resultdir. All your framed photos will be available in path/to/resultdir. There is a blunt mode you can use by adding the word __blunt__ as an extra parameter to this command. This mode will not incorporate a white space between photo and frame, cost of that is that the photos may be changed ratios to fit perfectly into the frames.
+Mandatory arguments are:
+- First a path to the directory with mockups
+- Second a path to the directory with photos to frame
+- Third an existing path to the directory where to put result images
+
+All paths must exist, even the path/to/resultdir. All your framed photos will be available in path/to/resultdir.
 
 
 __/!\ Don't work with originals, work with copies! Original photos are never modified, BUT I'd advise to have a copy of them.__
 
 Enjoy!
+You like what we do? Support us at [https://github.com/Photography-Utils/photoframer].
