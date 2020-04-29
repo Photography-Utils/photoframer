@@ -1,6 +1,16 @@
 import sys, os, signal
 from PIL import Image
 
+def help(message = ""):
+  print('Help - parameters: path/to/mockup framewidth [frameheight] framestartx framestarty')
+  print("Arguments are:")
+  print(" - framewidth: width of frame the image will fit in")
+  print(" - frameheight: (optional if for square) height of frame the image will fit in")
+  print(" - framestartx: x coordinates where the frame starts int the mockup image from the top left corner")
+  print(" - framestarty: y coordinates where the frame starts int the mockup image from the top left corner")
+
+  print("\n"+message)
+
 def testMockup(mockuppath, framesize, framecoordinates):
   testfilepath = os.path.join(os.path.dirname(os.path.realpath(__file__)),"imageformockuptest.jpg")
   photo_im = Image.open(testfilepath)
@@ -42,37 +52,42 @@ def testMockup(mockuppath, framesize, framecoordinates):
     os.rename(r''+mockuppath, r''+resultfile)
     print("File renamed, now ready to use with kshhhactivate.py")
 
-# Will handle main here before handing off to mockup test function
-if __name__ == "__main__":
-  argnumber = len(sys.argv)-1
-  if not 4 <= argnumber <= 5:
-    raise Exception('USE THIS WAY: python kshhhtest.py path/to/mockup framewidth [frameheight] framestartx framestarty')
+def main(argv):
+  if not 4 <= len(argv) <= 5:
+    help('Not the right number of arguments were given')
+    return
 
   # Check mockup is an image
-  mockuppath = sys.argv[1]
+  mockuppath = argv[0]
   try:
     Image.open(mockuppath)
   except:
-    raise Exception('Mockup is not an image file')
+    help('Mockup is not an image file')
+    return
 
   # Check frame in mockup dimensions are all numbers
   (framewidth,frameheight,framestartx,framestarty) = (0,0,0,0)
   try:
-    framewidth = int(sys.argv[2])
+    framewidth = int(argv[1])
 
     # If 3 arguments, frameheight is framewidth -> square
     # If 4 arguments, different argument for framewidth
-    frameheightindex = argnumber - 2
+    frameheightindex = len(argv) - 3
 
-    frameheight = int(sys.argv[frameheightindex])
-    framestartx = int(sys.argv[frameheightindex+1])
-    framestarty = int(sys.argv[frameheightindex+2])
+    frameheight = int(argv[frameheightindex])
+    framestartx = int(argv[frameheightindex+1])
+    framestarty = int(argv[frameheightindex+2])
   except:
-    raise Exception('Some frame dimensions are not numbers')
+    help('Some frame dimensions are not numbers')
+    return
 
   if framewidth <= 0 or frameheight <= 0 or framestartx <= 0 or framestarty <= 0:
-    raise Exception('Some frame dimensions are negative')
+    help('Some frame dimensions are negative')
+    return
 
   # Go do the job!
   testMockup(mockuppath, (framewidth, frameheight), (framestartx, framestarty))
 
+# Will handle main here before handing off to mockup test function
+if __name__ == "__main__":
+  main(sys.argv[1:])
