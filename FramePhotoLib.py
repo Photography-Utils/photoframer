@@ -1,4 +1,5 @@
-import sys, os, re
+import sys, os, re, time, copy
+import multiprocessing
 from PIL import Image
 
 ORIENTATIONS = ["landscape", "portrait", "square"]
@@ -118,77 +119,141 @@ class PhotoFramer:
       print("Niet photo found.")
   
 
+  def placePhotoInFrame(self,mockupinfo,photoinfo,frameinfo,numberframed):
+    (mockupimage,mockupwidth,mockupheight) = mockupinfo
+    (photoimage,photofilename,photowidth,photoheight) = photoinfo
+    (mockupframecoordinatex,mockupframecoordinatey,mockupframewidth,mockupframeheight) = frameinfo
+    # Add mockup to framed image
+    framed = Image.new('RGB', (mockupwidth, mockupheight))
+    framed.paste(mockupimage)
+
+    # Set for blunt mode, will be overwritten if not blunt mode
+    (coordx,coordy) = (mockupframecoordinatex,mockupframecoordinatey)
+    resizer = (mockupframewidth,mockupframeheight)
+
+    if not self.beBlunt:
+      # If not blunt mode, will keep image ratio
+
+      # Resize photo to enter the frame
+      frameratio = mockupframewidth/mockupframeheight
+      photoratio = photowidth/photoheight
+      resizer = (mockupframewidth,mockupframeheight)
+      if photoratio > frameratio:
+        resizer = (mockupframewidth,int(mockupframewidth/photoratio))
+      elif photoratio < frameratio:
+        resizer = (mockupframeheight*photoratio,mockupframeheight)
+
+      # If one side doesn't stick, implement padding
+      resizer = tuple(int(x*0.95) for x in resizer)
+
+      # Work out coordinates
+      coordx = int(mockupframecoordinatex+(mockupframewidth-resizer[0])/2)
+      coordy = int(mockupframecoordinatey+(mockupframeheight-resizer[1])/2)
+
+    # Resize and place image
+    resizedimage = photoimage.resize(resizer)
+    framed.paste(resizedimage, (coordx, coordy))
+
+    # Save resulting image
+    with numberframed.get_lock():
+      numberframed.value += 1
+      framed.save(os.path.join(self.resultDirectory, os.path.splitext(photofilename)[0]+"-framed-"+str(numberframed.value)+".jpg"))
+
+
+  def printProgress(self,numberframed,total):
+    reduction = 2.5
+    oldvalue = numberframed.value
+    characteri = 0
+
+    # Choose set of characters
+    # characters = "-/|\"
+    characters = "FRAMING"
+    # characters = ["-_="]
+    # characters = ["ᗣ••••••ᗤ","ᗣ•••••ᗤ_","ᗣ••••ᗤ__","ᗣ•••ᗤ___","ᗣ••ᗤ____","ᗣ•ᗤ_____","ᗣᗤ______"]
+
+    self.printOutput(True,numberframed.value,total,reduction,oldvalue,characters,characteri)
+    while(numberframed.value != total):
+      # Not moving in progress
+      if numberframed.value == oldvalue:
+        characteri = (characteri+1) % len(characters)
+      self.printOutput(False,numberframed.value,total,reduction,oldvalue,characters,characteri)
+      time.sleep(0.1)
+      oldvalue = numberframed.value
+    self.printOutput(False,total,total,reduction,0,characters,characteri)
+
+  def printOutput(self,start,number,total,reduction,oldvalue,characters,characteri):
+    barlength = int(100/reduction)
+    startstring = "Framing photos: "
+    if start:
+      sys.stdout.write(startstring+"["+ barlength*" " +"]")
+    else:
+      percentagebar = int( (number/total)*barlength )
+      remainingbar = barlength - percentagebar
+      sys.stdout.write("\r"+startstring+"["+percentagebar*"-")
+      if number == oldvalue:
+        sys.stdout.write(characters[characteri])
+      sys.stdout.write(remainingbar*" "+"]")
+      sys.stdout.write(" %d%% " % (number*100/total))
+      sys.stdout.flush()
+
   def assemble(self):
     print("Getting ready to frame...")
 
+    # Warning if blunt mode enabled
     if self.beBlunt:
       print("Blunt mode on - photo ratio could change to fit frame")
 
-    total = len(self.mockupList)*len(self.photoList)
-    progress = 0
-    number_framed = 0
-
+    # If no mockups or photos available, do nothing
     if len(self.photoList) == 0 or len(self.mockupList) == 0:
       print("Nothing to assemble. No photo detected or mockup detected (well, or both).")
       return
 
-    if total > 150:
+    # Check total not too much to assemble
+    potentialtotal = len(self.mockupList)*len(self.photoList)
+    if potentialtotal > 150:
       printstring = "LOTS AND LOTS! "+str(len(self.photoList))+" photos and "+str(len(self.mockupList))+" mockups found. Continue? [Enter]"
       input(printstring)
 
+    # Multiprocessing stuff
+    starttime = time.time()
+    processes = []
+    numberframed = multiprocessing.Value("i", 0)
+
+    # Count total mto be assembled
+    total = 0
+
     # Will parse through photos and mockups
-    for photo in self.photoList:
-
-      for mockup in self.mockupList:
-
-        photocount = int(progress/len(self.mockupList))+1
-        progress += 1
-
-        # Progress bar
-        sys.stdout.write("\rFraming photos: %d%% (photo %d/%d)" % (progress*100/total,photocount,len(self.photoList)))
-        sys.stdout.flush()
-
+    #  and assemble orientation matching ones
+    for pi in range(0, len(self.photoList)):
+      for mi in range(0, len(self.mockupList)):
+        photo = self.photoList[pi]
+        mockup = self.mockupList[mi]
         # Match?
         if photo.orientation != mockup.frameorientation:
           continue
+        total += 1 # total that will be assembled increment if orientation matches
+        # Dispatch task
+        mockupinfo = (mockup.image.copy(),mockup.width,mockup.height)
+        photoinfo = (photo.image.copy(),photo.filename,photo.width,photo.height)
+        frameinfo = (mockup.framecoordinatex,mockup.framecoordinatey,mockup.framewidth,mockup.frameheight)
+        self.placePhotoInFrame(mockupinfo,photoinfo,frameinfo,numberframed)
+        # p = multiprocessing.Process(target=self.placePhotoInFrame, args=(mockupinfo,photoinfo,frameinfo,numberframed))
+        # processes.append(p)
 
-        # Add mockup to framed image
-        framed = Image.new('RGB', (mockup.width, mockup.height))
-        framed.paste(mockup.image)
+    # # Start processes
+    # pr = multiprocessing.Process(target=self.printProgress, args=(numberframed,total))
+    # pr.start()
+    # for p in processes:
+    #   p.start()
 
-        # Set for blunt mode, will be overwritten if not blunt mode
-        (coordx,coordy) = (mockup.framecoordinatex,mockup.framecoordinatey)
-        resizer = (mockup.framewidth,mockup.frameheight)
+    # # Wait for process to end
+    # for p in processes:
+    #   p.join()
+    # pr.join()
 
-        if not self.beBlunt:
-          # If not blunt mode, will keep image ratio
-
-          # Resize photo to enter the frame
-          frameratio = mockup.framewidth/mockup.frameheight
-          photoratio = photo.width/photo.height
-          resizer = (mockup.framewidth,mockup.frameheight)
-          if photoratio > frameratio:
-            resizer = (mockup.framewidth,int(mockup.framewidth/photoratio))
-          elif photoratio < frameratio:
-            resizer = (mockup.frameheight*photoratio,mockup.frameheight)
-
-          # If one side doesn't stick, implement padding
-          resizer = tuple(int(x*0.95) for x in resizer)
-
-          # Resize image
-          resizedimage = photo.image.resize(resizer)
-
-          # Work out coordinates
-          coordx = int(mockup.framecoordinatex+(mockup.framewidth-resizer[0])/2)
-          coordy = int(mockup.framecoordinatey+(mockup.frameheight-resizer[1])/2)
-
-        # Resize and place image
-        resizedimage = photo.image.resize(resizer)
-        framed.paste(resizedimage, (coordx, coordy))
-
-        # Save resulting image
-        number_framed += 1
-        framed.save(os.path.join(self.resultDirectory, os.path.splitext(photo.filename)[0]+"-framed-"+str(number_framed)+".jpg"))
-
-    print("\nFramed! Check for result in directory "+self.resultDirectory)
+    timespent = int(time.time() - starttime)
+    print("\nFramed "+str(total)+" photos in about "+str(timespent)+" seconds!")
+    print("Check for results in directory "+self.resultDirectory)
+    print()
+    print("Happy with the result? Support us at https://github.com/Photography-Utils/photoframer")
 
