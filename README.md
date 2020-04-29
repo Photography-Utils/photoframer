@@ -8,7 +8,7 @@ You can use any mockup you want, portrait, square or landscape, and frame any ph
 - Python 3: [https://docs.python-guide.org/starting/install3/osx/]
 - Python PIL library: ```python3 -m pip install Pillow ```
 
-## 1. Get the mockup frame information
+## 1. Set the mockup frame information
 
 Take a mockup file with a frame in it. You need to know where the actual photo frame is in the mockup file.
 To do so, use the program kshhhtest.py.
