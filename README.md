@@ -15,7 +15,7 @@ To do so, use the program kshhhtest.py.
 
 It runs as such in a terminal:
 ```bash
-python3 kshhhtest.py path/to/mockup framewidth [frameheight] framestartx framestarty
+./test-mockup.sh path/to/mockup framewidth [frameheight] framestartx framestarty
 ```
 
 Where you started the command, check the file __isItFramedOk.jpg__.
@@ -30,7 +30,7 @@ Put all your photos you want to incorporate into these mockups in another direct
 
 In a terminal, run:
 ```bash
-python kshhhactivate.py
+./assemble.sh
     [-h] [-d] [-r] [-y] [-p] [--passepartout[:%off_frame_size]]
     path/to/mockupdir path/to/photodir path/to/resultdir
 ```
