@@ -119,45 +119,40 @@ class PhotoFramer:
       print("Niet photo found.")
   
 
-  def placePhotoInFrame(self,mockupinfo,photoinfo,frameinfo,numberframed):
-    (mockupimage,mockupwidth,mockupheight) = mockupinfo
-    (photoimage,photofilename,photowidth,photoheight) = photoinfo
-    (mockupframecoordinatex,mockupframecoordinatey,mockupframewidth,mockupframeheight) = frameinfo
+  def placePhotoInFrame(self,mockup,photo,numberframed):
     # Add mockup to framed image
-    framed = Image.new('RGB', (mockupwidth, mockupheight))
-    framed.paste(mockupimage)
+    framed = Image.new('RGB', (mockup.width, mockup.height))
+    framed.paste(mockup.image)
 
     # Set for blunt mode, will be overwritten if not blunt mode
-    (coordx,coordy) = (mockupframecoordinatex,mockupframecoordinatey)
-    resizer = (mockupframewidth,mockupframeheight)
+    (coordx,coordy) = (mockup.framecoordinatex,mockup.framecoordinatey)
+    resizer = (mockup.framewidth,mockup.frameheight)
 
     if not self.beBlunt:
       # If not blunt mode, will keep image ratio
 
       # Resize photo to enter the frame
-      frameratio = mockupframewidth/mockupframeheight
-      photoratio = photowidth/photoheight
-      resizer = (mockupframewidth,mockupframeheight)
+      frameratio = mockup.framewidth/mockup.frameheight
+      photoratio = photo.width/photo.height
+      resizer = (mockup.framewidth,mockup.frameheight)
       if photoratio > frameratio:
-        resizer = (mockupframewidth,int(mockupframewidth/photoratio))
+        resizer = (mockup.framewidth,int(mockup.framewidth/photoratio))
       elif photoratio < frameratio:
-        resizer = (mockupframeheight*photoratio,mockupframeheight)
+        resizer = (mockup.frameheight*photoratio,mockup.frameheight)
 
       # If one side doesn't stick, implement padding
       resizer = tuple(int(x*0.95) for x in resizer)
 
       # Work out coordinates
-      coordx = int(mockupframecoordinatex+(mockupframewidth-resizer[0])/2)
-      coordy = int(mockupframecoordinatey+(mockupframeheight-resizer[1])/2)
+      coordx = int(mockup.framecoordinatex+(mockup.framewidth-resizer[0])/2)
+      coordy = int(mockup.framecoordinatey+(mockup.frameheight-resizer[1])/2)
 
     # Resize and place image
-    resizedimage = photoimage.resize(resizer)
+    resizedimage = photo.image.resize(resizer)
     framed.paste(resizedimage, (coordx, coordy))
 
     # Save resulting image
-    with numberframed.get_lock():
-      numberframed.value += 1
-      framed.save(os.path.join(self.resultDirectory, os.path.splitext(photofilename)[0]+"-framed-"+str(numberframed.value)+".jpg"))
+    framed.save(os.path.join(self.resultDirectory, os.path.splitext(photo.filename)[0]+"-framed-"+str(numberframed.value)+".jpg"))
 
 
   def printProgress(self,numberframed,total):
@@ -194,6 +189,7 @@ class PhotoFramer:
         sys.stdout.write(characters[characteri])
       sys.stdout.write(remainingbar*" "+"]")
       sys.stdout.write(" %d%% " % (number*100/total))
+      sys.stdout.write("(%d/%d)" % (number,total))
       sys.stdout.flush()
 
   def assemble(self):
@@ -208,48 +204,40 @@ class PhotoFramer:
       print("Nothing to assemble. No photo detected or mockup detected (well, or both).")
       return
 
-    # Check total not too much to assemble
-    potentialtotal = len(self.mockupList)*len(self.photoList)
-    if potentialtotal > 150:
-      printstring = "LOTS AND LOTS! "+str(len(self.photoList))+" photos and "+str(len(self.mockupList))+" mockups found. Continue? [Enter]"
-      input(printstring)
-
     # Multiprocessing stuff
     starttime = time.time()
-    processes = []
     numberframed = multiprocessing.Value("i", 0)
 
     # Count total mto be assembled
     total = 0
-
-    # Will parse through photos and mockups
-    #  and assemble orientation matching ones
-    for pi in range(0, len(self.photoList)):
-      for mi in range(0, len(self.mockupList)):
-        photo = self.photoList[pi]
-        mockup = self.mockupList[mi]
+    matches = []
+    for photo in self.photoList:
+      for mockup in self.mockupList:
         # Match?
         if photo.orientation != mockup.frameorientation:
           continue
-        total += 1 # total that will be assembled increment if orientation matches
-        # Dispatch task
-        mockupinfo = (mockup.image.copy(),mockup.width,mockup.height)
-        photoinfo = (photo.image.copy(),photo.filename,photo.width,photo.height)
-        frameinfo = (mockup.framecoordinatex,mockup.framecoordinatey,mockup.framewidth,mockup.frameheight)
-        self.placePhotoInFrame(mockupinfo,photoinfo,frameinfo,numberframed)
-        # p = multiprocessing.Process(target=self.placePhotoInFrame, args=(mockupinfo,photoinfo,frameinfo,numberframed))
-        # processes.append(p)
+        total += 1
+        matches.append((photo,mockup))
 
-    # # Start processes
-    # pr = multiprocessing.Process(target=self.printProgress, args=(numberframed,total))
-    # pr.start()
-    # for p in processes:
-    #   p.start()
+    message = str(total)+" images to create"
+    if total > 150:
+      input("LOTS AND LOTS! "+message+"... Continue? [Enter]")
+    else:
+      print(message)
 
-    # # Wait for process to end
-    # for p in processes:
-    #   p.join()
-    # pr.join()
+    # Start progress bar process
+    pr = multiprocessing.Process(target=self.printProgress, args=(numberframed,total))
+    pr.start()
+
+    # Will parse through photos and mockups
+    #  and assemble orientation matching ones
+    for (photo,mockup) in matches:
+      # Do the task
+      self.placePhotoInFrame(mockup,photo,numberframed)
+      numberframed.value += 1
+  
+    # Wait for progress bar to stop
+    pr.join()
 
     timespent = int(time.time() - starttime)
     print("\nFramed "+str(total)+" photos in about "+str(timespent)+" seconds!")
