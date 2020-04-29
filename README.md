@@ -66,5 +66,6 @@ __/!\ Don't work with originals, work with copies! Original photos are never mod
 Enjoy!
 You like what we do? Sponsor us at [https://github.com/Photography-Utils/photoframer].
 
+
 Notes:
 * What is a passepartout? It's the space left between the side of the frame and the photo, and it is optional. See more at [https://en.wikipedia.org/wiki/Mat_(picture_framing)]
