@@ -40,7 +40,7 @@ Put all your photos you want to incorporate into these mockups in another direct
 In a terminal, run:
 ```bash
 ./assemble.sh
-    [-h] [-d] [-r] [-y] [-p] [--passepartout[:%off_frame_size]]
+    [-h] [-d] [-r] [-y] [-p] [--passepartout[=%off_frame_size]]
     path/to/mockupdir path/to/photodir path/to/resultdir
 ```
 - -h/--help:
