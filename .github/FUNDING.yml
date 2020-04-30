@@ -1,3 +1,4 @@
 # These are supported funding model platforms
-# Just Paypal
-custom: ["https://www.paypal.me/olivierdabl"]
+
+github: [jeerbl, oldabl]
+custom: ["https://www.paypal.me/olivierdabl","https://www.paypal.me/jeerbl"]
