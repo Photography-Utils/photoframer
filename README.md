@@ -15,8 +15,12 @@ To do so, use the program kshhhtest.py.
 
 It runs as such in a terminal:
 ```bash
-./test-mockup.sh path/to/mockup framewidth [frameheight] framestartx framestarty
+./test-mockup.sh [-h] [-n] path/to/mockup framewidth [frameheight] framestartx framestarty
 ```
+- -h/--help:
+	Print this message
+- -n/--no:
+	Automatically say no to renaming the mockup file to the recommended name
 
 Where you started the command, check the file __isItFramedOk.jpg__.
 If the photo fits perfectly into the mockup frame, then rename your mockup file with the suggestion in the terminal.
@@ -49,6 +53,9 @@ In a terminal, run:
 
 Mandatory arguments are:
 - First a path to the directory with mockups
+-- mockup files mush have the information on where the frame is in the following format: filename-<orientation>-s<framewidth>x<frameheight>c<coordinatesframestartx>x<coordinatesframestarty>.ext
+Orientation can be portrait, landscape or square
+Example: blue-wall-basic-11-square-s1279x1279c862x273.jpg livingroom-square-s1279x1279c862x273.jpg
 - Second a path to the directory with photos to frame
 - Third an existing path to the directory where to put result images
 

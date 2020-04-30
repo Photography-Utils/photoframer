@@ -1,8 +1,11 @@
-import sys, os, signal
+import sys, os, getopt
 from PIL import Image
 
 def help(message = ""):
   print('Help - parameters: path/to/mockup framewidth [frameheight] framestartx framestarty')
+  print("Available options are:")
+  print("-h/--help:\n\tPrint this message")
+  print("-n/--no:\n\tAutomatically say no to renaming the mockup file to the recommended name")
   print("Arguments are:")
   print(" - framewidth: width of frame the image will fit in")
   print(" - frameheight: (optional if for square) height of frame the image will fit in")
@@ -11,7 +14,7 @@ def help(message = ""):
 
   print("\n"+message)
 
-def testMockup(mockuppath, framesize, framecoordinates):
+def testMockup(mockuppath, framesize, framecoordinates, noask):
   testfilepath = os.path.join(os.path.dirname(os.path.realpath(__file__)),"imageformockuptest.jpg")
   photo_im = Image.open(testfilepath)
   mockup_im = Image.open(mockuppath)
@@ -44,21 +47,39 @@ def testMockup(mockuppath, framesize, framecoordinates):
   mockupname = mockupnamenoext+"-"+mockupnameadd+ext
   print(mockupname)
 
-  signal.alarm(2)
-  answer = input("Rename mockup to suggested name? y/N ")
-  signal.alarm(0)
-  if answer == 'Y' or answer == 'y':
-    resultfile = os.path.join(os.path.dirname(mockuppath),mockupname)
-    os.rename(r''+mockuppath, r''+resultfile)
-    print("File renamed, now ready to use with kshhhactivate.py")
+  if not noask:
+    answer = input("Rename mockup to suggested name? y/N ")
+    if answer == 'Y' or answer == 'y':
+      resultfile = os.path.join(os.path.dirname(mockuppath),mockupname)
+      os.rename(r''+mockuppath, r''+resultfile)
+      print("File renamed, now ready to use with kshhhactivate.py")
+
 
 def main(argv):
-  if not 4 <= len(argv) <= 5:
+  # Look for options
+  try:
+    options, arguments = getopt.getopt(argv, 'nh', ["no", "help"])
+  except:
+    help("Some options are invalid")
+    return
+
+  # Default options
+  noask = False
+
+  # Look for options set by user
+  for opt, arg in options:
+    if opt in ('-h','--help'):
+      help("Help was asked - will ignore other options and arguments")
+      return
+    elif opt in ('-n','--no'):
+      noask = True
+
+  if not 4 <= len(arguments) <= 5:
     help('Not the right number of arguments were given')
     return
 
   # Check mockup is an image
-  mockuppath = argv[0]
+  mockuppath = arguments[0]
   try:
     Image.open(mockuppath)
   except:
@@ -68,15 +89,15 @@ def main(argv):
   # Check frame in mockup dimensions are all numbers
   (framewidth,frameheight,framestartx,framestarty) = (0,0,0,0)
   try:
-    framewidth = int(argv[1])
+    framewidth = int(arguments[1])
 
     # If 3 arguments, frameheight is framewidth -> square
     # If 4 arguments, different argument for framewidth
-    frameheightindex = len(argv) - 3
+    frameheightindex = len(arguments) - 3
 
-    frameheight = int(argv[frameheightindex])
-    framestartx = int(argv[frameheightindex+1])
-    framestarty = int(argv[frameheightindex+2])
+    frameheight = int(arguments[frameheightindex])
+    framestartx = int(arguments[frameheightindex+1])
+    framestarty = int(arguments[frameheightindex+2])
   except:
     help('Some frame dimensions are not numbers')
     return
@@ -86,7 +107,7 @@ def main(argv):
     return
 
   # Go do the job!
-  testMockup(mockuppath, (framewidth, frameheight), (framestartx, framestarty))
+  testMockup(mockuppath, (framewidth, frameheight), (framestartx, framestarty), noask)
 
 # Will handle main here before handing off to mockup test function
 if __name__ == "__main__":
