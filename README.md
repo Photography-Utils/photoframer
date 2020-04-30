@@ -8,7 +8,7 @@ You can use any mockup you want, portrait, square or landscape, and frame any ph
 - Python 3: [https://docs.python-guide.org/starting/install3/osx/]
 - Python PIL library: ```python3 -m pip install Pillow ```
 
-## 1. Get the mockup frame information
+## 1. Set the mockup frame information
 
 Take a mockup file with a frame in it. You need to know where the actual photo frame is in the mockup file.
 To do so, use the program kshhhtest.py.
@@ -22,9 +22,14 @@ It runs as such in a terminal:
 - -n/--no:
 	Automatically say no to renaming the mockup file to the recommended name
 
+- framewidth: width of frame the image will fit in
+- frameheight: (optional if for square) height of frame the image will fit in
+- framestartx: x coordinates where the frame starts int the mockup image from the top left corner
+- framestarty: y coordinates where the frame starts int the mockup image from the top left corner
+  
 Where you started the command, check the file __isItFramedOk.jpg__.
 If the photo fits perfectly into the mockup frame, then rename your mockup file with the suggestion in the terminal.
-If not perfect, reiterate with different parameters. Bear in mind, DO NOT allow for white spaces inside the frame - in other words, make your photo stick to the frame as accurately as possible, you will have the possibility to enter a mode later that puts white spaces as passepartouts.
+If not perfect, reiterate with different parameters. Bear in mind, DO NOT allow for white spaces inside the frame - in other words, make your photo stick to the frame as accurately as possible, you will have the possibility to enter a mode later that puts white spaces as passepartouts*.
 
 
 ## 2. Frame all your photos
@@ -47,17 +52,19 @@ In a terminal, run:
 - -y/--yes:
 	Will not ask any question
 - -p:
-	Set passepartout on frames to 95% of frame longest edge
+	Set passepartout* on frames to 95% of frame longest edge
 - --passepartout=off_frame_size:
-	Set passepartout on frames to off_frame_size% of frame longest edge
+	Set passepartout* on frames to off_frame_size% of frame longest edge
+
+Bear in mind, passepartout* cannot be constant all around the photo if you don't enable the --resize option along with it.
 
 Mandatory arguments are:
-- First a path to the directory with mockups
+- mockupdir: path to the directory containing the mockups
 -- mockup files mush have the information on where the frame is in the following format: filename-<orientation>-s<framewidth>x<frameheight>c<coordinatesframestartx>x<coordinatesframestarty>.ext
 Orientation can be portrait, landscape or square
 Example: blue-wall-basic-11-square-s1279x1279c862x273.jpg livingroom-square-s1279x1279c862x273.jpg
-- Second a path to the directory with photos to frame
-- Third an existing path to the directory where to put result images
+- photodir: path to the directory containing the photos to frame
+- resultdir: existing path to the directory where the result images will be saved
 
 All paths must exist, even the path/to/resultdir. All your framed photos will be available in path/to/resultdir.
 
@@ -65,4 +72,7 @@ All paths must exist, even the path/to/resultdir. All your framed photos will be
 __/!\ Don't work with originals, work with copies! Original photos are never modified, BUT I'd advise to have a copy of them.__
 
 Enjoy!
-You like what we do? Support us at [https://github.com/Photography-Utils/photoframer].
+You like this? Be a sponsor at [https://github.com/Photography-Utils/photoframer].
+
+Notes:
+* What is a passepartout? It's the space left between the side of the frame and the photo, and it is optional. See more at [https://en.wikipedia.org/wiki/Mat_(picture_framing)]
