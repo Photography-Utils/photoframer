@@ -200,9 +200,8 @@ class PhotoFramer:
       print("Nothing to assemble. No photo detected or mockup detected (well, or both).")
       return
 
-    # Multiprocessing stuff
+    # Time start save for stats
     starttime = time.time()
-    numberframed = multiprocessing.Value("i", 0)
 
     # Sum up options for assembling
     print("Passepartout on frames set to: "+str(self.passepartout)+"%")
@@ -226,9 +225,12 @@ class PhotoFramer:
       print(message)
 
     # Start progress bar process
+    numberframed = multiprocessing.Value("i", 0)
     progressbar = FramePhotoHelpers.ProgressBar(pretext="Framing photos: ",
-                                                loadingchars="FRAMING",
-                                                barwidth=int(100/3),
+                                                progresschar="■",
+                                                loadingchars="◧◩◪◨",
+                                                barwidth=33,
+                                                startendchar="",
                                                 displaypercentage=True,
                                                 displaycount=True)
     pr = multiprocessing.Process(target=progressbar.inThread, args=(numberframed,total,0.1))

@@ -1,0 +1,3 @@
+[submodule "ProgressBar"]
+	path = ProgressBar
+	url = https://github.com/oldabl/python-progress-bar.git
