@@ -78,4 +78,4 @@ Notes:
 * What is a passepartout? It's the space left between the side of the frame and the photo, and it is optional. See more at [https://en.wikipedia.org/wiki/Mat_(picture_framing)]
 
 Example of results below:
-![](images/resultexample.jpg)
+<img src="images/resultexample.png" />
