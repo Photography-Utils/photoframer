@@ -1,8 +1,7 @@
 import sys, os, re, time
 import multiprocessing
 from PIL import Image
-
-ORIENTATIONS = ["landscape", "portrait", "square"]
+import FramePhotoHelpers
 
 #
 # Role: hold information every image will need
@@ -12,8 +11,8 @@ class BasicPicture:
     self.image = image
     self.lookupBasicInfo()
   def lookupBasicInfo(self):
-    self.fullpath = self.image.filename
-    self.filename = os.path.basename(self.fullpath)
+    self.fullpath = os.path.abspath(self.image.filename)
+    (self.filename, self.extension) = os.path.splitext(os.path.basename(self.fullpath))
     (self.width, self.height) = self.image.size
 
 #
@@ -40,11 +39,13 @@ class Mockup(BasicPicture):
     else:
       # Check results
       if not (
-        self.frameorientation in ORIENTATIONS and
         self.framewidth > 0 and self.frameheight > 0 and
         self.framecoordinatex > 0 and self.framecoordinatey > 0
       ):
         self.valid = False
+      else:
+        # Work out orientation
+        self.frameorientation = FramePhotoHelpers.getOrientation(self.framewidth,self.frameheight)
 
 #
 # Role: hold information on photos
@@ -55,15 +56,7 @@ class Photo(BasicPicture):
     super().__init__(image)
     self.lookupPhotoInfo()
   def lookupPhotoInfo(self):
-    # less than 2% side difference ratio - consider it square
-    if 0.98 < self.height/self.width < 1.02:
-      self.orientation = "square"
-    elif self.height > self.width:
-      self.orientation = 'portrait'
-    elif self.height == self.width:
-      self.orientation = 'square'
-    else:
-      self.orientation = 'landscape'
+    self.orientation = FramePhotoHelpers.getOrientation(self.width, self.height)
 
 #
 # The big photo framer class
