@@ -40,7 +40,7 @@ Put all your photos you want to incorporate into these mockups in another direct
 In a terminal, run:
 ```bash
 ./assemble.sh
-    [-h] [-d] [-r] [-y] [-p] [--passepartout[:%off_frame_size]]
+    [-h] [-d] [-r] [-y] [-p] [--passepartout[=%off_frame_size]]
     path/to/mockupdir path/to/photodir path/to/resultdir
 ```
 - -h/--help:
@@ -59,10 +59,10 @@ In a terminal, run:
 Bear in mind, passepartout* cannot be constant all around the photo if you don't enable the --resize option along with it.
 
 Mandatory arguments are:
-- mockupdir: path to the directory containing the mockups
--- mockup files mush have the information on where the frame is in the following format: filename-<orientation>-s<framewidth>x<frameheight>c<coordinatesframestartx>x<coordinatesframestarty>.ext
-Orientation can be portrait, landscape or square
+- mockupdir: path to the directory containing the mockups - mockup files mush have the information on where the frame is in the following format: filename-\<orientation\>-s\<framewidth\>x\<frameheight\>c\<coordinatesframestartx\>x\<coordinatesframestarty\>.ext - orientation can be *portrait*, *landscape* or *square*
+```
 Example: blue-wall-basic-11-square-s1279x1279c862x273.jpg livingroom-square-s1279x1279c862x273.jpg
+```
 - photodir: path to the directory containing the photos to frame
 - resultdir: existing path to the directory where the result images will be saved
 
