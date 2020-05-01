@@ -188,7 +188,8 @@ class PhotoFramer:
     framed.paste(resizedimage, (coordx, coordy))
 
     # Save resulting image
-    framed.save(os.path.join(self.resultDirectory, os.path.splitext(photo.filename)[0]+"-framed-"+str(numberframed.value)+".jpg"))
+    resultname = os.path.splitext(photo.filename)[0]+"-framed-"+str(numberframed.value)+".jpg"
+    framed.save(os.path.join(self.resultDirectory, resultname), quality=98, optimize=True)
 
   # Role: progress bar thread
   def printProgress(self,numberframed,total):
@@ -202,18 +203,18 @@ class PhotoFramer:
     # characters = ["-_="]
     # characters = ["ᗣ••••••ᗤ","ᗣ•••••ᗤ_","ᗣ••••ᗤ__","ᗣ•••ᗤ___","ᗣ••ᗤ____","ᗣ•ᗤ_____","ᗣᗤ______"]
 
-    self.printOutput(True,numberframed.value,total,reduction,oldvalue,characters,characteri)
+    self.printBar(True,numberframed.value,total,reduction,oldvalue,characters,characteri)
     while(numberframed.value != total):
       # Not moving in progress
       if numberframed.value == oldvalue:
         characteri = (characteri+1) % len(characters)
-      self.printOutput(False,numberframed.value,total,reduction,oldvalue,characters,characteri)
+      self.printBar(False,numberframed.value,total,reduction,oldvalue,characters,characteri)
       time.sleep(0.1)
       oldvalue = numberframed.value
-    self.printOutput(False,total,total,reduction,0,characters,characteri)
+    self.printBar(False,total,total,reduction,0,characters,characteri)
 
   # Role: print progress bar info
-  def printOutput(self,start,number,total,reduction,oldvalue,characters,characteri):
+  def printBar(self,start,number,total,reduction,oldvalue,characters,characteri):
     barlength = int(100/reduction)
     startstring = "Framing photos: "
     if start:
@@ -249,7 +250,7 @@ class PhotoFramer:
     print("Passepartout on frames set to: "+str(self.passepartout)+"%")
     print("Resizing of photos to fit the frames allowed:",self.resizingallowed)
 
-    # Count total mto be assembled
+    # Count total to be assembled
     total = 0
     matches = []
     for photo in self.photoList:
