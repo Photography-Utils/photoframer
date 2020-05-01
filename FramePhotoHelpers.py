@@ -1,5 +1,5 @@
 
-
+import "python-progress-bar.ProgressBar"
 
 SQUARE_RATIO_DEFAULT_TOLERANCE = 0.02
 

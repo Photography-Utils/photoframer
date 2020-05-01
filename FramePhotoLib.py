@@ -82,6 +82,7 @@ class PhotoFramer:
     self.lookupMockups()
     self.lookupPhotos()
 
+
   # Role: look up mockups in self.mockupdirectory
   def lookupMockups(self):
     print("Looking for mockups...")
@@ -107,6 +108,7 @@ class PhotoFramer:
     else:
       print("Nada mockup found.")
 
+
   # Role: look up photos in self.photodirectory
   def lookupPhotos(self):
     print("Looking for photos...")
@@ -129,7 +131,8 @@ class PhotoFramer:
         print()
     else:
       print("Niet photo found.")
-  
+
+
   # Role: create the result image by
   #   - opening the mockup mockup
   #   - pasting the photo photo inside the mockup
@@ -184,44 +187,6 @@ class PhotoFramer:
     resultname = os.path.splitext(photo.filename)[0]+"-framed-"+str(numberframed.value)+".jpg"
     framed.save(os.path.join(self.resultDirectory, resultname), quality=98, optimize=True)
 
-  # Role: progress bar thread
-  def printProgress(self,numberframed,total):
-    reduction = 2.5
-    oldvalue = numberframed.value
-    characteri = 0
-
-    # Choose set of characters
-    # characters = "-/|\"
-    characters = "FRAMING"
-    # characters = ["-_="]
-    # characters = ["ᗣ••••••ᗤ","ᗣ•••••ᗤ_","ᗣ••••ᗤ__","ᗣ•••ᗤ___","ᗣ••ᗤ____","ᗣ•ᗤ_____","ᗣᗤ______"]
-
-    self.printBar(True,numberframed.value,total,reduction,oldvalue,characters,characteri)
-    while(numberframed.value != total):
-      # Not moving in progress
-      if numberframed.value == oldvalue:
-        characteri = (characteri+1) % len(characters)
-      self.printBar(False,numberframed.value,total,reduction,oldvalue,characters,characteri)
-      time.sleep(0.1)
-      oldvalue = numberframed.value
-    self.printBar(False,total,total,reduction,0,characters,characteri)
-
-  # Role: print progress bar info
-  def printBar(self,start,number,total,reduction,oldvalue,characters,characteri):
-    barlength = int(100/reduction)
-    startstring = "Framing photos: "
-    if start:
-      sys.stdout.write(startstring+"["+ barlength*" " +"]")
-    else:
-      percentagebar = int( (number/total)*barlength )
-      remainingbar = barlength - percentagebar
-      sys.stdout.write("\r"+startstring+"["+percentagebar*"-")
-      if number == oldvalue:
-        sys.stdout.write(characters[characteri])
-      sys.stdout.write(remainingbar*" "+"]")
-      sys.stdout.write(" %d%% " % (number*100/total))
-      sys.stdout.write("(%d/%d)" % (number,total))
-      sys.stdout.flush()
 
   # Role: handles assembling photos into what frames into what mockups
   #  from start to end, printing traces etc,
@@ -261,7 +226,12 @@ class PhotoFramer:
       print(message)
 
     # Start progress bar process
-    pr = multiprocessing.Process(target=self.printProgress, args=(numberframed,total))
+    progressbar = FramePhotoHelpers.ProgressBar(pretext="Framing photos: ",
+                                                loadingchars="FRAMING",
+                                                barwidth=int(100/3),
+                                                displaypercentage=True,
+                                                displaycount=True)
+    pr = multiprocessing.Process(target=progressbar.inThread, args=(numberframed,total,0.1))
     pr.start()
 
     # Will parse through photos and mockups
