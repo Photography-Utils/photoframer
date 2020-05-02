@@ -3,3 +3,5 @@ __pycache__
 isItFramedOk.jpg
 build
 dist
+photoframer*.tar.gz
+*.spec
