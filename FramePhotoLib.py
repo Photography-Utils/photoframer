@@ -227,8 +227,11 @@ class PhotoFramer:
     # Start progress bar process
     numberframed = multiprocessing.Value("i", 0)
     progressbar = FramePhotoHelpers.ProgressBar(pretext="Framing photos: ",
+                                                # progresschar="█",
                                                 progresschar="■",
-                                                loadingchars="◧◩◪◨",
+                                                # loadingchars="▓▒░▒",
+                                                # loadingchars="◧◩◪◨",
+                                                loadingchars="▄▀",
                                                 barwidth=33,
                                                 startendchar="",
                                                 displaypercentage=True,
