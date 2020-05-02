@@ -15,10 +15,7 @@ def help(message = ""):
   print("\n"+message)
 
 def testMockup(mockuppath, framesize, framecoordinates, noask):
-  if getattr(sys, 'frozen', False):
-    application_path = os.path.dirname(os.path.abspath(sys.executable))
-  elif __file__:
-    application_path = os.path.dirname(os.path.abspath(__file__))
+  application_path = os.path.dirname(os.path.abspath(__file__))
 
   testfilepath = os.path.join(application_path,"imageformockuptest.jpg")
   print("Mockup file image for frame test: "+testfilepath)
@@ -38,7 +35,9 @@ def testMockup(mockuppath, framesize, framecoordinates, noask):
   # Add photo to frame at coordinates
   framed_im.paste(resizedphoto_im, framecoordinates)
   # Save result in working dir
-  framed_im.save(os.path.join(os.getcwd(), 'isItFramedOk.jpg'))
+  testresultfilename = 'isItFramedOk.jpg'
+  wheretosaveresultfile = os.getcwd()
+  framed_im.save(os.path.join(wheretosaveresultfile, testresultfilename))
 
   # Helper for frame name in case it's good
   print("If this result is good (meaning you dimensioned the frame correctly and the photo fits perfectly in it), you should rename the frame as follows in order to use it as a frame for kshhhactivate:")
@@ -59,6 +58,8 @@ def testMockup(mockuppath, framesize, framecoordinates, noask):
       resultfile = os.path.join(os.path.dirname(mockuppath),mockupname)
       os.rename(r''+mockuppath, r''+resultfile)
       print("File renamed, now ready to use with kshhhactivate.py")
+
+  print("\nCheck file "+testresultfilename+" at "+wheretosaveresultfile)
 
 
 def main(argv):
