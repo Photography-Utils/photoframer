@@ -15,7 +15,7 @@ To do so, use the program kshhhtest.py.
 
 It runs as such in a terminal:
 ```bash
-./test-mockup.sh [-h] [-n] path/to/mockup framewidth [frameheight] framestartx framestarty
+./test.sh [-h] [-n] path/to/mockup framewidth [frameheight] framestartx framestarty
 ```
 - -h/--help:
 	Print this message
@@ -39,7 +39,7 @@ Put all your photos you want to incorporate into these mockups in another direct
 
 In a terminal, run:
 ```bash
-./assemble.sh
+./frame.sh
     [-h] [-d] [-r] [-y] [-p] [--passepartout[=%off_frame_size]]
     path/to/mockupdir path/to/photodir path/to/resultdir
 ```
