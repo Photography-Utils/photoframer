@@ -10,7 +10,8 @@ To do so, use the program kshhhtest.py.
 
 It runs as such in a terminal:
 ```bash
-./photoframer-<version>/test/test [-h] [-n] path/to/mockup framewidth [frameheight] framestartx framestarty
+./photoframer-<version>/test/test
+	[-h] [-n] path/to/mockup framewidth [frameheight] framestartx framestarty
 ```
 - -h/--help:
 	Print this message
@@ -35,8 +36,8 @@ Put all your photos you want to incorporate into these mockups in another direct
 In a terminal, run:
 ```bash
 ./photoframer-<version>/frame/frame
-    [-h] [-d] [-r] [-y] [-p] [--passepartout[=%off_frame_size]]
-    path/to/mockupdir path/to/photodir path/to/resultdir
+	[-h] [-d] [-r] [-y] [-p] [--passepartout[=%off_frame_size]]
+	path/to/mockupdir path/to/photodir path/to/resultdir
 ```
 - -h/--help:
 	Print this message
