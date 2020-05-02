@@ -46,3 +46,6 @@ rm -rf *.spec
 rm -rf dist/ build/
 rm -rf __pycache__
 rm -rf "$tarballdirname"
+
+echo "Don't forget to sync the new tag : git push --tags"
+echo "Now go to https://github.com/Photography-Utils/photoframer/releases and add your release to the new tag"
