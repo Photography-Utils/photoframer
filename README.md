@@ -1,3 +1,5 @@
+-> **Clone with option --recurse-submodules to fetch submodules directly when cloning**
+
 This little personal project helps frame photos into frames of mockup rooms (mockup rooms not provided except small sample).
 You can use any mockup you want, portrait, square or landscape, and frame any photo you want to the right frames. The program will help you calibrate your mockups (to map where the frame is in the mockup room) and then assemble photos to them - it will automatically frame all landscape photos into landscape frame mockups, portraits into portrait frame mockups and square into square frame mockups.
 
