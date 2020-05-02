@@ -6,43 +6,43 @@ if [ -z "$1" ]; then
 fi;
 
 set -x
-set -v
 
-# Get version from script arguments
-version = $1
+echo "Get version from script argument"
+version="$1"
+tarballdirname="photoframer-$version"
+tarballname="$tarballdirname.tar.gz"
 
 echo "Clean up before packaging"
-rm -rf frame.spec
-rm -rf test.spec
-rm -rf dist
-rm -rf build
+rm -rf "$tarballname"
+rm -rf "$tarballdirname"
+rm -rf *.spec
+rm -rf dist/ build/
+rm -rf __pycache__
 
 echo "Create frame.py executable"
-pyinstaller frame.py
-pyinstaller frame.spec
+pyinstaller -y frame.py
+pyinstaller -y frame.spec
 
 echo "Create test.py executable"
-pyinstaller test.py
-pyinstaller test.spec
+pyinstaller -y test.py
+pyinstaller -y test.spec
+cp -rf imageformockuptest.jpg dist/test/
 
-echo "Include RELEASE.md file"
-cp RELEASE.md dist/
+echo "Include RELEASE.md and example files"
+cp -rf RELEASE.md dist/
+cp -rf examples/resultexample.png dist/
 
-tarballdirname = photoframer-$version
 echo "Prepare to create the tarball from dir $tarballdirname/"
-mv dist $tarballname
+mv dist $tarballdirname
 
-tarballname = $tarballdirname.tar.gz
 echo "Create the tarball $tarballname"
-tar -cvzf $tarballname.tar.gz $tarballdirname
+tar -cvzf $tarballname $tarballdirname
 
 echo "Create version git tag if result tarball exists"
-if [ -f "$tarballname" ]; then
-    git tag
-fi
+test -f "$tarballname" && git tag $version
 
 echo "Clean up after itself"
-rm -rf frame.spec
-rm -rf test.spec
-rm -rf dist
-rm -rf build
+rm -rf *.spec
+rm -rf dist/ build/
+rm -rf __pycache__
+rm -rf "$tarballdirname"

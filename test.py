@@ -15,7 +15,13 @@ def help(message = ""):
   print("\n"+message)
 
 def testMockup(mockuppath, framesize, framecoordinates, noask):
-  testfilepath = os.path.join(os.path.dirname(os.path.realpath(__file__)),"imageformockuptest.jpg")
+  if getattr(sys, 'frozen', False):
+    application_path = os.path.dirname(os.path.abspath(sys.executable))
+  elif __file__:
+    application_path = os.path.dirname(os.path.abspath(__file__))
+
+  testfilepath = os.path.join(application_path,"imageformockuptest.jpg")
+  print("Mockup file image for frame test: "+testfilepath)
   photo_im = Image.open(testfilepath)
   mockup_im = Image.open(mockuppath)
 
