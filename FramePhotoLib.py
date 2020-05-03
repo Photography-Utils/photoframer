@@ -227,11 +227,15 @@ class PhotoFramer:
     # Start progress bar process
     numberframed = multiprocessing.Value("i", 0)
     progressbar = FramePhotoHelpers.ProgressBar(pretext="Framing photos: ",
-                                                progresschar="■",
-                                                # loadingchars="◧◩◪◨",
-                                                loadingchars="▄▀",
+                                                # progresschar="■",
+                                                # remainingbarchar=" ",
+                                                # loadingchars="▄▀",
+                                                # startendchar="",
+                                                progresschar="·",
+                                                remainingbarchar="•",
+                                                loadingchars="ᗧ",
+                                                startendchar="·🍒",
                                                 barwidth=33,
-                                                startendchar="",
                                                 displaypercentage=True,
                                                 displaycount=True)
     pr = multiprocessing.Process(target=progressbar.inThread, args=(numberframed,total,0.1))
@@ -251,6 +255,6 @@ class PhotoFramer:
     print("\n\nFramed "+str(total)+" photos in about "+str(timespent)+" seconds!")
     print("Result images at "+self.resultDirectory)
     print()
-    print("Happy? Support us at https://github.com/Photography-Utils/photoframer")
+    print("Happy with the result? Just like Pacman, we need to eat (cherries and more).\nSupport us at https://github.com/Photography-Utils/photoframer")
     print("Thank you (:")
 

@@ -3,27 +3,27 @@ import time, sys, os
 # TO USE IN YOUR CODE
 #from folder.ProgressBar import ProgressBar
 
+# Class: ProgressBar
+# Role: Set progress bar parameters and define its printing functions
 class ProgressBar:
   def __init__(self,
               pretext=r"", # Text to print before the bar
               progresschar=r"█", # Character to show progress
+              remainingbarchar=r" ", # Character to fill the remaining bar with
               loadingchars=r"█▓▒░▒▓", # Last character of bar moving as bar loads (moves even if no progress)
-              startendchar=r"||", # Characters going around the bar
+              startendchar=r"||", # The two characters going around the bar
               barwidth=int(os.get_terminal_size().columns/2), # Length of the bar in characters (does not include what's around the bar)
               displaypercentage=False, # Show percentage as well or not
               displaycount=False # Show count as well or not
               ):
     self.pretext = str(pretext)
     self.progresschar = str(progresschar)
+    self.remainingbarchar = str(remainingbarchar)
     self.loadingchars = loadingchars
     self.startendchar = str(startendchar)
     self.barwidth = int(barwidth)
     self.displaypercentage = displaypercentage
     self.displaycount = displaycount
-
-    # loadingchars ideas
-    # characters = "-/|\"
-    # characters = ["-_="]
 
     # Private
     self.loadingcharsindex = 0
@@ -87,7 +87,7 @@ class ProgressBar:
       self.loadingcharsindex = (self.loadingcharsindex+1) % len(self.loadingchars)
       remainingbar -= 1
     #Add remaining gap
-    barstring += remainingbar*" "
+    barstring += remainingbar*self.remainingbarchar
     #End char
     if self.startendchar:
       if len(self.startendchar) >= 2:
