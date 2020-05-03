@@ -1,62 +1,7 @@
-import sys, os, re, time
+import sys, os, time
 import multiprocessing
 from PIL import Image
 import FramePhotoHelpers
-
-#
-# Role: hold information every image will need
-class BasicPicture:
-  # Basic information of an image object
-  def __init__(self, image):
-    self.image = image
-    self.lookupBasicInfo()
-  def lookupBasicInfo(self):
-    self.fullpath = os.path.abspath(self.image.filename)
-    (self.filename, self.extension) = os.path.splitext(os.path.basename(self.fullpath))
-    (self.width, self.height) = self.image.size
-
-#
-# Role: hold information on mockups
-#   - mockup image size
-#   - frame orientation and size
-class Mockup(BasicPicture):
-  # Information specific to mockups
-  def __init__(self, image):
-    super().__init__(image)
-    self.valid = True
-    self.lookupMockupInfo()
-  def lookupMockupInfo(self):
-    info = re.search("(portrait|landscape|square)-s([0-9]+)x([0-9]+)c([0-9]+)x([0-9]+)", self.filename)
-    try:
-      self.frameorientation = info.group(1)
-      self.framewidth = int(info.group(2))
-      self.frameheight = int(info.group(3))
-      self.framecoordinatex = int(info.group(4))
-      self.framecoordinatey = int(info.group(5))
-    except:
-      # Could not find info
-      self.valid = False
-    else:
-      # Check results
-      if not (
-        self.framewidth > 0 and self.frameheight > 0 and
-        self.framecoordinatex > 0 and self.framecoordinatey > 0
-      ):
-        self.valid = False
-      else:
-        # Work out orientation
-        self.frameorientation = FramePhotoHelpers.getOrientation(self.framewidth,self.frameheight)
-
-#
-# Role: hold information on photos
-#   - orientation and size
-class Photo(BasicPicture):
-  # Information specific to photos
-  def __init__(self, image):
-    super().__init__(image)
-    self.lookupPhotoInfo()
-  def lookupPhotoInfo(self):
-    self.orientation = FramePhotoHelpers.getOrientation(self.width, self.height)
 
 #
 # The big photo framer class
@@ -93,7 +38,7 @@ class PhotoFramer:
         except:
           pass
         else:
-          mockup = Mockup(mockup_im)
+          mockup = FramePhotoHelpers.Mockup(mockup_im, self.debug)
           if mockup.valid:
             self.mockupList.append(mockup)
       break # Don't look in subdirs
@@ -119,7 +64,7 @@ class PhotoFramer:
         except:
           pass
         else:
-          self.photoList.append(Photo(photo_im))
+          self.photoList.append(FramePhotoHelpers.Photo(photo_im, self.debug))
       break # Don't look in subdirs
 
     if len(self.photoList) > 0:

@@ -1,6 +1,11 @@
 import sys, os, getopt
 from PIL import Image
+import FramePhotoHelpers
 
+
+#
+# Print help message
+#
 def help(message = ""):
   print('Help - parameters: path/to/mockup framewidth [frameheight] framestartx framestarty')
   print("Available options are:")
@@ -14,6 +19,11 @@ def help(message = ""):
 
   print("\n"+message)
 
+
+#
+# Test a mockup with frame size and coordinates
+#  then propose a new name with parameters included
+#
 def testMockup(mockuppath, framesize, framecoordinates, noask):
   application_path = os.path.dirname(os.path.abspath(__file__))
 
@@ -41,15 +51,7 @@ def testMockup(mockuppath, framesize, framecoordinates, noask):
 
   # Helper for frame name in case it's good
   print("If this result is good (meaning you dimensioned the frame correctly and the photo fits perfectly in it), you should rename the frame as follows in order to use it as a frame for kshhhactivate:")
-  mockupnameadd = "landscape"
-  if framesize[0] < framesize[1]:
-    mockupnameadd = "portrait"
-  elif framesize[0] == framesize[1]:
-    mockupnameadd = "square"
-  mockupnameadd += "-s"+str(framesize[0])+"x"+str(framesize[1])
-  mockupnameadd += "c"+str(framecoordinates[0])+"x"+str(framecoordinates[1])
-  (mockupnamenoext, ext) = os.path.splitext(os.path.basename(mockuppath))
-  mockupname = mockupnamenoext+"-"+mockupnameadd+ext
+  mockupname = FramePhotoHelpers.addMockupInfo(mockuppath,framesize,framecoordinates)
   print(mockupname)
 
   if not noask:
@@ -62,6 +64,9 @@ def testMockup(mockuppath, framesize, framecoordinates, noask):
   print("\nCheck file "+testresultfilename+" at "+wheretosaveresultfile)
 
 
+#
+# Main function, called with argv passed on command line
+#
 def main(argv):
   # Look for options
   try:
@@ -116,6 +121,9 @@ def main(argv):
   # Go do the job!
   testMockup(mockuppath, (framewidth, frameheight), (framestartx, framestarty), noask)
 
+
+#
 # Will handle main here before handing off to mockup test function
+#
 if __name__ == "__main__":
   main(sys.argv[1:])
