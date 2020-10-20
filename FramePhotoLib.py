@@ -163,6 +163,10 @@ class PhotoFramer:
         total += 1
         matches.append((photo,mockup))
 
+    if total <= 0:
+      print("No image to create, no match between photo and mockup orientations")
+      return
+
     message = "Images to create: "+str(total)
     if total > 150 and not self.noask:
       input("LOTS AND LOTS! "+message+"... Continue? [Enter]")
